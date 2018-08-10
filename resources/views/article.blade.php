@@ -14,7 +14,7 @@
         <style>
             html, body {
                 background-color: #fff;
-                color: #636b6f;
+                color: #333;
                 font-family: 'Raleway', sans-serif;
                 font-weight: 100;
                 height: 100vh;
@@ -79,7 +79,7 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    我是article
+                    我是article {{$name}}
                 </div>
 
                 <div class="links">
