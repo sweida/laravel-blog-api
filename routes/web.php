@@ -30,3 +30,7 @@ Route::get('/hello', function() {
 Route::get('/list', function() {
     return 'list';
 });
+
+Route::get('/detail', function() {
+    return 'detail';
+});
