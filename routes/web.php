@@ -14,23 +14,3 @@
 Route::get('/', function () {
     return view('welcome');
 });
-
-// 传值
-Route::any('/article', function() {
-    return view('article', ['name' => 'laravel学习']);
-});
-
-// Route::redirect('/', 404);
-
-
-Route::get('/hello', function() {
-    return 'hello laravel';
-});
-
-Route::get('/list', function() {
-    return 'list';
-});
-
-Route::get('/detail', function() {
-    return 'detail';
-});
