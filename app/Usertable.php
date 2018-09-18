@@ -86,7 +86,7 @@ class Usertable extends Model
     // 是否登录
     public function is_login() 
     {
-        dd(session()->all());
-        // return session('user_id') ?: false;
+        // dd(session()->all());
+        return session('user_id') ?: false;
     }
 }
