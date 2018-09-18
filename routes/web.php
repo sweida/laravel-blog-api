@@ -11,7 +11,7 @@
 |
 */
 function user_ins(){
-    return new App\Userinfo;
+    return new App\Usertable;
 }
 
 
@@ -29,4 +29,12 @@ Route::any('api/signup', function() {
 
 Route::any('api/login', function() {
     return user_ins()->login();
+});
+
+Route::any('api/logout', function() {
+    return user_ins()->logout();
+});
+
+Route::any('test', function() {
+    return user_ins()->is_logged_in();
 });

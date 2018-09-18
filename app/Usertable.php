@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Request;
 use Hash;
 
-class Userinfo extends Model
+class Usertable extends Model
 {
     // 注册api
     public function signup()
@@ -64,19 +64,29 @@ class Userinfo extends Model
         
         // 写入session
         session()->put('username', $user->username);
-        session()->put('id', $user->id);
+        session()->put('user_id', $user->id);
 
-        return ['status' => 1, 'msg' => '登录成功', 'id' => $user->id];
+        return ['status' => 1, 'msg' => '登录成功', 'user_id' => $user->id];
     }
 
-    // public function has_username_and_password()
-    // {
-    //     $username = Request::get('username');
-    //     $password = Request::get('password');
-    //     // // 检查用户名/密码是否为空，
-    //     if ($username && $password)
-    //         return [$username, $password];
-    //     else
-    //         false;
-    // }
+    // 登出
+    public function logout() 
+    {
+        // 全部清空
+        // session()->flush();
+
+        // 清除用户名和id
+        session()->forget('username');
+        session()->forget('user_id');
+        // session()->put('username', null);
+        // session()->put('user_id', null);
+        dd(session()->all());
+    }
+
+    // 是否登录
+    public function is_logged_in() 
+    {
+        dd(session()->all());
+        // return session('user_id') ?: false;
+    }
 }

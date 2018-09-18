@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateTableUserinfos extends Migration
+class CreateTableUsertables extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateTableUserinfos extends Migration
      */
     public function up()
     {
-        Schema::create('userinfos', function (Blueprint $table) {
+        Schema::create('usertables', function (Blueprint $table) {
             $table->increments('id');
             $table->string('username')->unique();
             $table->string('email')->unique()->nullable();
@@ -31,6 +31,6 @@ class CreateTableUserinfos extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('userinfos');
+        Schema::dropIfExists('usertables');
     }
 }
