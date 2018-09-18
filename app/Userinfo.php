@@ -43,6 +43,7 @@ class Userinfo extends Model
         // dd(Request::all());
     }
 
+    // 登录api
     public function login()
     {
         $username = Request::get('username');
