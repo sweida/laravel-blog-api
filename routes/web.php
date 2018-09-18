@@ -36,5 +36,5 @@ Route::any('api/logout', function() {
 });
 
 Route::any('api/is_login', function() {
-    return user_ins()->is_logged_in();
+    return user_ins()->is_login();
 });
