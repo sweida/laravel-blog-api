@@ -84,7 +84,7 @@ class Usertable extends Model
     }
 
     // 是否登录
-    public function is_login() 
+    public function is_logged_in() 
     {
         dd(session()->all());
         // return session('user_id') ?: false;
