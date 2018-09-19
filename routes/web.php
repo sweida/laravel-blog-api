@@ -85,3 +85,7 @@ Route::any('api/answer/add', function() {
 Route::any('api/answer/change', function() {
     return answer_ins()->change();
 });
+
+Route::any('api/answer/read', function() {
+    return answer_ins()->read();
+});
