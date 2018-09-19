@@ -80,7 +80,8 @@ class Usertable extends Model
         session()->forget('user_id');
         // session()->put('username', null);
         // session()->put('user_id', null);
-        dd(session()->all());
+        // session()->all();
+        return ['status' => 1, 'msg' => '退出登陆'];
     }
 
     // 是否登录

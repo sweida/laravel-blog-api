@@ -10,10 +10,18 @@
 | contains the "web" middleware group. Now create something great!
 |
 */
+function rq($key=null, $default=null){
+    if(!$key) return Request::all();
+    return Request::get($key, $default);
+}
+
 function user_ins(){
     return new App\Usertable;
 }
 
+function question_ins(){
+    return new App\Question;
+}
 
 Route::get('/', function () {
     return view('welcome');
@@ -37,4 +45,20 @@ Route::any('api/logout', function() {
 
 Route::any('api/is_login', function() {
     return user_ins()->is_login();
+});
+
+Route::any('api/question/add', function() {
+    return question_ins()->add();
+});
+
+Route::any('api/question/change', function() {
+    return question_ins()->change();
+});
+
+Route::any('api/question/read', function() {
+    return question_ins()->read();
+});
+
+Route::any('api/question/remove', function() {
+    return question_ins()->remove();
 });
