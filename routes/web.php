@@ -19,8 +19,20 @@ function user_ins(){
     return new App\Usertable;
 }
 
+function err($msg=null){
+    return ['statu' => 0, 'msg' => $msg]
+}
+
+function suc($data=null){
+    return ['statu' => 1, 'data' => $data]
+}
+
 function question_ins(){
     return new App\Question;
+}
+
+function answer_ins(){
+    return new App\Answer;
 }
 
 Route::get('/', function () {
@@ -31,6 +43,7 @@ Route::any('api', function() {
     return ['version' => 0.1];
 });
 
+// 登陆注册
 Route::any('api/signup', function() {
     return user_ins()->signup();
 });
@@ -47,6 +60,7 @@ Route::any('api/is_login', function() {
     return user_ins()->is_login();
 });
 
+// 提问
 Route::any('api/question/add', function() {
     return question_ins()->add();
 });
@@ -61,4 +75,13 @@ Route::any('api/question/read', function() {
 
 Route::any('api/question/remove', function() {
     return question_ins()->remove();
+});
+
+// 回答
+Route::any('api/answer/add', function() {
+    return answer_ins()->add();
+});
+
+Route::any('api/answer/change', function() {
+    return answer_ins()->change();
 });
