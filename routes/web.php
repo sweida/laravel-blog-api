@@ -15,16 +15,16 @@ function rq($key=null, $default=null){
     return Request::get($key, $default);
 }
 
-function user_ins(){
-    return new App\Usertable;
-}
-
 function err($msg=null){
-    return ['statu' => 0, 'msg' => $msg]
+    return ['statu' => 0, 'msg' => $msg];
 }
 
 function suc($data=null){
-    return ['statu' => 1, 'data' => $data]
+    return ['statu' => 1, 'data' => $data];
+}
+
+function user_ins(){
+    return new App\Usertable;
 }
 
 function question_ins(){
