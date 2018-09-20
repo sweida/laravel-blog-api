@@ -67,12 +67,19 @@ Route::any('api/is_login', function() {
     return user_ins()->is_login();
 });
 
+// 修改密码
 Route::any('api/change_password', function() {
     return user_ins()->change_password();
 });
 
+// 发送短信
 Route::any('api/reset_password', function() {
     return user_ins()->reset_password();
+});
+
+// 短信修改密码
+Route::any('api/validata_captcha', function() {
+    return user_ins()->validata_captcha();
 });
 
 // 提问

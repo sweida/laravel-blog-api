@@ -25,18 +25,17 @@ class Usertable extends Model
             return err('用户名已存在');
 
         // 加密密码
-        $hashed_password = Hash::make($password);
+        // $hashed_password = Hash::make($password);
         // $hashed_password = bcrypt($password);
         // dd($hashed_password);
 
-        // 存入数据库 
-        // $this指向Userinfo表
-        $user = $this;
-        $user->password = $hashed_password;
-        $user->username = $username;
-        $user->phone = $phone;
-        if ($user->save())
-            return suc(['id' => $user->id]);
+        // 存入数据库 , $this指向当前Usertable表
+        // $user = $this;
+        $this->username = $username;
+        $this->password = Hash::make($password);
+        $this->phone = $phone;
+        if ($this->save())
+            return suc(['id' => $this->id]);
         else
             return err('db insert failed');
 
@@ -114,63 +113,98 @@ class Usertable extends Model
             err('db update failed');
     }
 
-    // 找回密码,发送短信验证码
-    public function reset_password()
-    {
-        // $current_time = time();
-
-        if (!rq('phone'))
-            return err('phone is required');
-
-        $exists = $this->where('phone', rq('phone'))->exists();
-
-        if (!$exists)
-            return err('找不到该手机号码');
-        
-        // 生成验证码
-        $captcha = $this->generate_captcha();
-        
-        $user->phone_captcha = $captcha;
-        
-        if ($user->save()) {
-            // 如果验证码保存成功，发送验证码短信
-            $this->send_sms();
-            return suc(['msg' => '短信已经发送']);
-        } else {
-            return err('验证码保存失败');
-        }
-    }   
-    
     // 生成验证码
     public function generate_captcha()
     {
         return rand(1000, 9999);
     }
 
+    // 找回密码,发送短信验证码
+    public function reset_password()
+    {
+        // if ($this->is_robot())
+        //     return err('操作太频繁');
+
+        if (!rq('phone'))
+            return err('phone is required');
+
+        $user = $this->where('phone', rq('phone'))->first();
+        // $exists = $user->exists();
+
+        if (!$user)
+            return err('找不到该手机号码');
+        
+        // 生成验证码
+        $captcha = $this->generate_captcha();
+        $user->phone_captcha = $captcha;
+        
+        // 一分钟后清空数据库验证码
+
+
+        if ($user->save()) {
+            // 如果验证码保存成功，发送验证码短信
+            $this->send_sms();
+            // 保存上一次操作时间
+            // $this->update_robot_time();
+            return suc(['msg' => '短信已经发送']);
+        } else {
+            return err('验证码保存失败');
+        }
+    }   
+    
     // 发送短信
     public function send_sms()
     {
         return true;
     }
 
-    // 验证验证码修改密码
+    // 用验证验修改密码
     public function validata_captcha()
     {
+        // if ($this->is_robot(2))
+        //     return err('操作太频繁');
+
         if (!rq('phone') || !rq('phone_captcha') || !rq('new_password'))
             return err('phone and new_password and phone_captcha are required');
         
+        // 检查用户是否存在
         $user = $this->where([
             'phone'=> rq('phone'),
             'phone_captcha'=> rq('phone_captcha')
         ])->first();
 
-        if (!'$user')
+        if (!$user)
             return err('验证码错误或者手机号不对');
-
+        
+        // 加密新密码，清空验证码
         $user->password = Hash::make(rq('new_password'));
+        // $user->phone_captcha = null;
+        
+        // $this->update_robot_time();
+        
         return $user->save() ?
             suc(['msg' => '密码修改成功']) :
             err('db update failed');
+    }
+
+    // 检查是否机器人
+    public function is_robot($time = 10)
+    {
+        // 如果没有last_action_time说明接口没被调用过
+        if (!session('last_action_time'))
+            return false;
+        
+        // $current_time = time();
+        // $last_action_time = session('last_action_time');
+
+        $elapsed = time() - session('last_action_time');
+        return !($elapsed > $time);
+    }
+
+    // 上一次操作时间
+    public function update_robot_time()
+    {
+        session()->set('last_action_time', time());
     }
 
     public function answers()
