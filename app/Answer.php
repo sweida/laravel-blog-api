@@ -35,7 +35,7 @@ class Answer extends Model
         $this->user_id = session('user_id');
 
         return $this->save() ? 
-            suc('回答保存成功3') :
+            suc(['msg' => '回答保存成功']) :
             ['status' => 0, 'msg' => 'db insert failed'];
     }
 
@@ -55,7 +55,7 @@ class Answer extends Model
         
         $answer->content = rq('content');
         return $answer->save() ?
-            suc('修改成功') :
+            suc(['msg' => '修改成功']) :
             err('db inster failed');
     }
 
@@ -72,7 +72,7 @@ class Answer extends Model
             $answer = $this->find(rq('id'));
             if (!$answer)
                 return err('answer not exists');
-            return suc($answer);
+            return suc(['data' => $answer]);
         }
 
         // 检查问题question_id是否存在
@@ -84,6 +84,71 @@ class Answer extends Model
             ->where('question_id', rq('question_id'))
             ->get();
         
-        return suc($answer);
+        return suc(['data' => $answer]);
+    }
+    
+    // 删除回答
+    public function remove()
+    {
+        // 检查用户是否登陆
+        if (!user_ins()->is_login())
+            return err('还未登录');
+        
+        if (!rq('id'))
+            return err('id is required');
+        
+        $answer = $this->find(rq('id'));
+        if (!$answer)
+            return err('回答不存在');
+
+        if ($answer->user_id !=session('user_id'))
+            return err('你没有权限删除');
+        
+        
+        // comment_ins()->remove(rq('id'));
+        // 先删除此回答下的所有评论，操作comments表
+        // $this->where('answer_id', rq('id'))->delete();
+
+        return $answer->delete() ?
+            suc(['msg' => '删除成功']) :
+            err('db delete failed');
+    }
+
+    // 投票
+    public function vote()
+    {
+        // 检查用户是否登陆
+        if (!user_ins()->is_login())
+            return err('还未登录');
+
+        if (!rq('answer_id') || !rq('vote'))
+            return err('answer_id and vote are required');
+        
+        $answer = $this->find(rq('answer_id'));
+        if (!$answer)
+            return err('answer not existes');
+
+        // 1是赞同 2反对
+        $vote = rq('vote') <= 1 ? 1 : 2;
+
+        // 如果投过票就删除投票
+        // newPivotStatement 进入中间连接表操作
+        $answer->usertables()
+            ->newPivotStatement()
+            ->where('usertable_id', session('user_id'))
+            ->where('answer_id', rq('answer_id'))
+            ->delete();
+        
+        $answer->usertables()->attach(session('user_id'), ['vote' => $vote]);
+        
+        return suc(['msg' => '投票成功']);
+    }
+
+    public function usertables()
+    {
+        return $this
+            ->belongsToMany('App\Usertable')
+            ->withPivot('vote')
+            ->withTimestamps();
     }
 }

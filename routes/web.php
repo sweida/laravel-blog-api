@@ -19,8 +19,11 @@ function err($msg=null){
     return ['statu' => 0, 'msg' => $msg];
 }
 
-function suc($data=null){
-    return ['statu' => 1, 'data' => $data];
+function suc($data_to_merge=null){
+    $data = ['status' => 1];
+    if ($data_to_merge)
+        $data = array_merge($data, $data_to_merge);
+    return $data;
 }
 
 function user_ins(){
@@ -64,6 +67,14 @@ Route::any('api/is_login', function() {
     return user_ins()->is_login();
 });
 
+Route::any('api/change_password', function() {
+    return user_ins()->change_password();
+});
+
+Route::any('api/reset_password', function() {
+    return user_ins()->reset_password();
+});
+
 // 提问
 Route::any('api/question/add', function() {
     return question_ins()->add();
@@ -94,6 +105,10 @@ Route::any('api/answer/read', function() {
     return answer_ins()->read();
 });
 
+Route::any('api/answer/vote', function() {
+    return answer_ins()->vote();
+});
+
 // 评论
 Route::any('api/comment/add', function() {
     return comment_ins()->add();
@@ -106,3 +121,5 @@ Route::any('api/comment/read', function() {
 Route::any('api/comment/remove', function() {
     return comment_ins()->remove();
 });
+
+Route::any('api/timeline', 'CommonController@timeline');
