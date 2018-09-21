@@ -20,9 +20,13 @@ class Usertable extends Model
 
         // 检查用户名是否存在
         $uesr_exists = $this->where('username', $username)->exists();
-
         if ($uesr_exists)
             return err('用户名已存在');
+
+        // 检查手机号是否存在
+        $phone_exists = $this->where('phone', $phone)->exists();
+        if ($phone_exists)
+            return err('手机号已存在');      
 
         // 加密密码
         // $hashed_password = Hash::make($password);
@@ -35,7 +39,7 @@ class Usertable extends Model
         $this->password = Hash::make($password);
         $this->phone = $phone;
         if ($this->save())
-            return suc(['id' => $this->id]);
+            return suc(['id' => $this->id, 'msg' => '注册成功']);
         else
             return err('db insert failed');
 
@@ -122,30 +126,38 @@ class Usertable extends Model
     // 找回密码,发送短信验证码
     public function reset_password()
     {
-        // if ($this->is_robot())
-        //     return err('操作太频繁');
+        // 限制多少秒发送一次短信
+        if ($this->is_robot(1))
+            return err('操作太频繁');
 
         if (!rq('phone'))
             return err('phone is required');
 
         $user = $this->where('phone', rq('phone'))->first();
-        // $exists = $user->exists();
 
         if (!$user)
             return err('找不到该手机号码');
+
+        // 时间限制，一段时间后重置次数
+        $longTime = time() - strtotime($user->updated_at);
+        if ($longTime > 15)
+            session()->put('captcha_count', 1);
+        // 每次发送短信+1
+        $captcha_count = session('captcha_count');
+        session()->put('captcha_count', $captcha_count+1);
+        // 限制5条短信
+        if (session('captcha_count') > 6)
+            return err('发送短信太频繁，5分钟后在操作');
         
         // 生成验证码
         $captcha = $this->generate_captcha();
         $user->phone_captcha = $captcha;
-        
-        // 一分钟后清空数据库验证码
-
 
         if ($user->save()) {
             // 如果验证码保存成功，发送验证码短信
             $this->send_sms();
             // 保存上一次操作时间
-            // $this->update_robot_time();
+            $this->update_robot_time();
             return suc(['msg' => '短信已经发送']);
         } else {
             return err('验证码保存失败');
@@ -161,8 +173,8 @@ class Usertable extends Model
     // 用验证验修改密码
     public function validata_captcha()
     {
-        // if ($this->is_robot(2))
-        //     return err('操作太频繁');
+        if ($this->is_robot(2))
+            return err('操作太频繁');
 
         if (!rq('phone') || !rq('phone_captcha') || !rq('new_password'))
             return err('phone and new_password and phone_captcha are required');
@@ -176,11 +188,16 @@ class Usertable extends Model
         if (!$user)
             return err('验证码错误或者手机号不对');
         
-        // 加密新密码，清空验证码
+        // 短信过期验证
+        $longTime = time() - strtotime($user->updated_at);
+        if ($longTime > 180)
+            return err('短信已经过期');
+
+        // 验证成功，加密新密码，清空验证码
         $user->password = Hash::make(rq('new_password'));
-        // $user->phone_captcha = null;
+        $user->phone_captcha = null;
         
-        // $this->update_robot_time();
+        $this->update_robot_time();
         
         return $user->save() ?
             suc(['msg' => '密码修改成功']) :
@@ -193,9 +210,6 @@ class Usertable extends Model
         // 如果没有last_action_time说明接口没被调用过
         if (!session('last_action_time'))
             return false;
-        
-        // $current_time = time();
-        // $last_action_time = session('last_action_time');
 
         $elapsed = time() - session('last_action_time');
         return !($elapsed > $time);
@@ -204,7 +218,7 @@ class Usertable extends Model
     // 上一次操作时间
     public function update_robot_time()
     {
-        session()->set('last_action_time', time());
+        session()->put('last_action_time', time());
     }
 
     public function answers()
