@@ -48,6 +48,26 @@ class Usertable extends Model
         // dd(Request::all());
     }
 
+    // 获取用户信息
+    public function read()
+    {
+        if (!rq('id'))
+            return err('required user id');
+        
+        $get = ['id', 'username', 'intro'];
+        $user = $this->find(rq('id'), $get);
+        $data = $user->toArray();
+
+        // $question_count = question_ins()->where('user_id', rq('id'))->count();
+        // $answer_count = answer_ins()->where('user_id', rq('id'))->count();
+        $questions = question_ins()->where('user_id', rq('id'))->get();
+        $answers = answer_ins()->where('user_id', rq('id'))->get();
+
+        $data['answers'] = $answers;
+        $data['questions'] = $questions;
+
+        return suc(['data' => $data]);
+    }
     // 登录api
     public function login()
     {
@@ -123,11 +143,11 @@ class Usertable extends Model
         return rand(1000, 9999);
     }
 
-    // 找回密码,发送短信验证码
+    // 发送短信验证码
     public function reset_password()
     {
         // 限制多少秒发送一次短信
-        if ($this->is_robot(1))
+        if ($this->is_robot(10))
             return err('操作太频繁');
 
         if (!rq('phone'))
@@ -140,14 +160,14 @@ class Usertable extends Model
 
         // 时间限制，一段时间后重置次数
         $longTime = time() - strtotime($user->updated_at);
-        if ($longTime > 15)
+        if ($longTime > 100)
             session()->put('captcha_count', 1);
         // 每次发送短信+1
         $captcha_count = session('captcha_count');
         session()->put('captcha_count', $captcha_count+1);
         // 限制5条短信
         if (session('captcha_count') > 6)
-            return err('发送短信太频繁，5分钟后在操作');
+            return err('发送短信太频繁，5分钟后再操作');
         
         // 生成验证码
         $captcha = $this->generate_captcha();

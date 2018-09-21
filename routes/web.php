@@ -26,6 +26,10 @@ function suc($data_to_merge=null){
     return $data;
 }
 
+// function paginate($page=1, $limit=12){
+//     $skip = 
+// }
+
 function user_ins(){
     return new App\Usertable;
 }
@@ -67,18 +71,22 @@ Route::any('api/is_login', function() {
     return user_ins()->is_login();
 });
 
+Route::any('api/user/read', function() {
+    return user_ins()->read();
+});
+
 // 修改密码
-Route::any('api/change_password', function() {
+Route::any('api/user/change_password', function() {
     return user_ins()->change_password();
 });
 
 // 发送短信
-Route::any('api/reset_password', function() {
+Route::any('api/user/reset_password', function() {
     return user_ins()->reset_password();
 });
 
 // 短信修改密码
-Route::any('api/validata_captcha', function() {
+Route::any('api/user/validata_captcha', function() {
     return user_ins()->validata_captcha();
 });
 
