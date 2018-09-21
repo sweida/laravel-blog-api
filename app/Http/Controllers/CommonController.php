@@ -31,6 +31,6 @@ class CommonController extends Controller
             return $item->created_at;
         });
         $data = $data -> values()->all();
-        return suc(['data', $data]);
+        return suc(['data' => $data]);
     }
 }
