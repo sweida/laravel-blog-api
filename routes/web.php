@@ -71,10 +71,13 @@ Route::any('api/is_login', function() {
     return user_ins()->is_login();
 });
 
+Route::any('api/userlist', function() {
+    return user_ins()->userlist();
+});
+
 Route::any('api/user/read', function() {
     return user_ins()->read();
 });
-
 // 修改密码
 Route::any('api/user/change_password', function() {
     return user_ins()->change_password();

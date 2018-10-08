@@ -68,6 +68,27 @@ class Usertable extends Model
 
         return suc(['data' => $data]);
     }
+
+    // 获取所有用户列表
+    public function userlist()
+    {
+        // 每页多少条
+        $limit = rq('limit') ?: 10;
+        // 页码，从第limit条开始
+        $skip = (rq('page') ? rq('page')-1 : 0) * $limit;
+
+        // 按创建时间排序
+        $list = $this
+            ->orderBy('created_at')
+            ->limit($limit)
+            ->skip($skip)
+            ->get(['id', 'username', 'avatar_url', 'email'])
+            ->keyBy('id');
+
+        // 查看所有提问，默认15条
+        return ['status' => 0, 'data' => $list];
+    }
+
     // 登录api
     public function login()
     {
@@ -90,8 +111,14 @@ class Usertable extends Model
         // 写入session
         session()->put('username', $user->username);
         session()->put('user_id', $user->id);
+        
+        // 最后一次登录时间
+        // $user->last_login = date('Y-m-d h:i:s',time());
+        $user->updated_at = time();
 
-        return suc(['msg' => '登录成功', 'user_id' => $user->id]);
+        return $user->save() ?
+            suc(['msg' => '登录成功', 'user_id' => $user->id]) : 
+            err('服务器有问题，请稍后在登录');
     }
 
     // 登出
@@ -113,7 +140,7 @@ class Usertable extends Model
     public function is_login() 
     {
         // dd(session()->all());
-        return session('user_id') ?: false;
+        return session('user_id') ? ['登录id'=> session('user_id')] : ['msg'=> '未登录'];
     }
 
     // 用旧密码修改密码

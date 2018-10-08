@@ -18,6 +18,7 @@ class CreateTableUsertables extends Migration
             $table->string('username')->unique();
             $table->string('email')->unique()->nullable();
             $table->string('phone')->unique()->nullable();
+            $table->text('avatar_url')->nullable();
             $table->string('password');
             $table->text('intro')->nullable();
             $table->timestamps();
