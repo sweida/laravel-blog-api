@@ -54,6 +54,7 @@ class Usertable extends Model
         if (!rq('id'))
             return err('required user id');
         
+        // 查询指定的字段
         $get = ['id', 'username', 'intro'];
         $user = $this->find(rq('id'), $get);
         $data = $user->toArray();

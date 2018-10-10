@@ -22,6 +22,7 @@ $factory->define(App\User::class, function (Faker $faker) {
     ];
 });
 
+// 生成用户
 $factory->define(App\Usertable::class, function (Faker $faker) {
     return [
         'username' => $faker->name,
@@ -29,3 +30,12 @@ $factory->define(App\Usertable::class, function (Faker $faker) {
         'password' => bcrypt('123456'), // secret
     ];
 });
+
+// // 生成文章
+// $factory->define(App\article::class, function (Faker $faker) {
+//     return [
+//         'title' => $faker->name,
+//         'content' => $faker->unique()->safeEmail,
+//         'password' => bcrypt('123456'), // secret
+//     ];
+// });

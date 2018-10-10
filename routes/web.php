@@ -46,6 +46,14 @@ function comment_ins(){
     return new App\Comment;
 }
 
+function article_ins(){
+    return new App\article;
+}
+
+function tag_ins(){
+    return new App\tag;
+}
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -141,3 +149,25 @@ Route::any('api/comment/remove', function() {
 });
 
 Route::any('api/timeline', 'CommonController@timeline');
+
+// article
+Route::any('api/article/add', function() {
+    return article_ins()->add();
+});
+
+Route::any('api/article/remove', function() {
+    return article_ins()->remove();
+});
+
+Route::any('api/article/restored', function() {
+    return article_ins()->restored();
+});
+
+Route::any('api/article/read', function() {
+    return article_ins()->read();
+});
+
+// 标签
+Route::any('api/tag/read', function() {
+    return tag_ins()->read();
+});

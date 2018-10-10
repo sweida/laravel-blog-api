@@ -66,7 +66,13 @@ class Question extends Model
     {
         // 查看指定id
         if (rq('id'))
-            return ['status' => 1, 'data' => $this->find(rq('id'))];
+        {
+            // 查找指定id是否存在
+            $question = $this->find(rq('id'));
+            if (!$question)
+                return err('question not exists');
+            return suc(['data' => $question]);
+        }
 
         // 每页多少条
         $limit = rq('limit') ?: 10;
