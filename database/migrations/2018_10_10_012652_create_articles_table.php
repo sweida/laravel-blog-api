@@ -17,7 +17,7 @@ class CreateArticlesTable extends Migration
             $table->increments('id');
             $table->string('title');
             $table->text('content')->nullable();
-            $table->string('tag')->nullable();
+            $table->integer('clicks')->nullable();
             $table->string('sort')->nullable();
             $table->softDeletes();
             $table->timestamps();

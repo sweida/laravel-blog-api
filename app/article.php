@@ -30,8 +30,11 @@ class article extends Model
         //     ->delete();
 
         // tags()->attach($this->id, ['tag' => rq('tag')]);
+
+        // 将拿到的标签分割字符串
         $tagArr = explode(",",rq('tag'));
 
+        // 将每个标签遍历插入数据库
         foreach($tagArr as $value){
 
             $tag = DB::table('tags')->insert([
@@ -40,14 +43,33 @@ class article extends Model
             ]);
         }
             
-
-        // if (rq('tag'))
-        //     tag_ins()->tag = rq('tag');
-        //     tag_ins()->article_id = 1;
         // 保存
         return ($aritcle && $tag) ? 
             suc(['id' => $this->id, 'msg' => '新增文章成功']) :
             err('db delete failed');
+    }
+
+    // 修改文章
+    public function change() {
+        if (!rq('id')){
+            return err('id is required');
+        }
+
+        $article = $this->find(rq('id'));
+
+        if (!$article)
+            return err('找不到该文章');
+
+        if (rq('title')){
+            $article->title = rq('title');
+        }
+        if (rq('content')){
+            $article->content = rq('content');
+        }
+
+        return $article->save() ? 
+            suc(['msg' => '修改成功']) :
+            err('db inster failed');
     }
 
     // 删除文章
@@ -103,4 +125,36 @@ class article extends Model
 
         return suc(['data' => $list]);
     }        
+
+    // 按年月查询文章
+    public function times() {
+        // 按年月查询
+        if (!rq('year')){
+            return err('year is required');
+        }
+
+        if (rq('year') && rq('month')) 
+        {
+            $articles = $this
+                ->whereYear('created_at', rq('year'))
+                ->whereMonth('created_at', rq('month'))
+                ->get();
+            if (!$articles->first())
+                return err('该月份没有文章');
+            return suc(['data' => $articles]);
+        }
+        
+        // 按年查询
+        if (rq('year')) 
+        {
+            $articles = $this
+                ->whereYear('created_at', rq('year'))
+                ->get();
+            // var_dump($articles);
+            if (!$articles->first()){
+                return err('该年份没有文章');
+            }
+            return suc(['data' => $articles]);
+        }
+    }
 }

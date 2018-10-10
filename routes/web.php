@@ -155,6 +155,10 @@ Route::any('api/article/add', function() {
     return article_ins()->add();
 });
 
+Route::any('api/article/change', function() {
+    return article_ins()->change();
+});
+
 Route::any('api/article/remove', function() {
     return article_ins()->remove();
 });
@@ -170,4 +174,9 @@ Route::any('api/article/read', function() {
 // 标签
 Route::any('api/tag/read', function() {
     return tag_ins()->read();
+});
+
+// 按月份查询
+Route::any('api/article/times', function() {
+    return article_ins()->times();
 });
