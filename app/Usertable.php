@@ -141,7 +141,7 @@ class Usertable extends Model
     public function is_login() 
     {
         // dd(session()->all());
-        return session('user_id') ? ['登录id'=> session('user_id')] : ['msg'=> '未登录'];
+        return session('user_id') ? ['登录id'=> session('user_id')] : false;
     }
 
     // 用旧密码修改密码

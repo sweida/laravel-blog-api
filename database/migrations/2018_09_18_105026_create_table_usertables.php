@@ -22,6 +22,7 @@ class CreateTableUsertables extends Migration
             $table->string('password');
             $table->text('intro')->nullable();
             $table->timestamps();
+            // unique 唯一
         });
     }
 

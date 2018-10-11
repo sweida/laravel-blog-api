@@ -62,6 +62,10 @@ function link_ins(){
     return new App\Link;
 }
 
+function message_ins(){
+    return new App\message;
+}
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -209,4 +213,21 @@ Route::any('api/link/remove', function() {
 
 Route::any('api/link/read', function() {
     return link_ins()->read();
+});
+
+// 留言
+Route::any('api/message/add', function() {
+    return message_ins()->add();
+});
+
+Route::any('api/message/read', function() {
+    return message_ins()->read();
+});
+
+Route::any('api/message/change', function() {
+    return message_ins()->change();
+});
+
+Route::any('api/message/remove', function() {
+    return message_ins()->remove();
 });
