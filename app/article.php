@@ -19,9 +19,8 @@ class article extends Model
             return ['status' => 0, 'msg' => 'required title'];
         
         $this->title = rq('title');
-        // 如有有描述就保存描述
-        if (rq('content'))
-            $this->content = rq('content');
+        $this->content = rq('content');
+        $this->sort = rq('sort');
             
         $aritcle = $this->save();
         // $article->tags()
@@ -32,15 +31,18 @@ class article extends Model
         // tags()->attach($this->id, ['tag' => rq('tag')]);
 
         // 将拿到的标签分割字符串
-        $tagArr = explode(",",rq('tag'));
+        $tag = true;
+        if (rq('tag')){
+            $tagArr = explode(",",rq('tag'));
 
-        // 将每个标签遍历插入数据库
-        foreach($tagArr as $value){
+            // 将每个标签遍历插入数据库
+            foreach($tagArr as $value){
 
-            $tag = DB::table('tags')->insert([
-                'tag' => $value,
-                'article_id' => $this->id
-            ]);
+                $tag = DB::table('tags')->insert([
+                    'tag' => $value,
+                    'article_id' => $this->id
+                ]);
+            }
         }
             
         // 保存
@@ -66,8 +68,23 @@ class article extends Model
         if (rq('content')){
             $article->content = rq('content');
         }
+        if (rq('sort')){
+            $article->sort = rq('sort');
+        }
+        $tag = true;
+        // if (rq('tag')){
+        //     $tagArr = explode(",",rq('tag'));
 
-        return $article->save() ? 
+        //     // 将每个标签遍历插入数据库
+        //     foreach($tagArr as $value){
+
+        //         $tag = DB::table('tags')->insert([
+        //             'tag' => $value,
+        //             'article_id' => rq('id')
+        //         ]);
+        //     }
+        // }
+        return ($article->save() && $tag) ? 
             suc(['msg' => '修改成功']) :
             err('db inster failed');
     }
@@ -101,28 +118,58 @@ class article extends Model
             err('db update failed');
     }
 
-    // 获取全部文章
+    // 查看文章
     public function read() {
         // 查看指定id
         if (rq('id'))
         {
-            // 查找指定id是否存在
+            
             $article = $this->find(rq('id'));
+            // 查找指定id是否存在
             if (!$article)
                 return err('article not exists');
+            // 浏览量
+            $article->clicks += 1;
+            $article->save();
+            // 获取文章标签
+            $article->tags = tag_ins()->where('article_id', rq('id'))->get(['tag']);
+
             return suc(['data' => $article]);
         }
 
+        // 分页
         $limit = rq('limit') ?: 10;
         $skip = (rq('page') ? rq('page')-1 : 0) * $limit;
+
+        // 按分类获取文章
+        if (rq('sort'))
+        {
+            $articles = $this
+                ->orderBy('created_at')
+                ->where('sort', rq('sort'))
+                ->limit($limit)
+                ->skip($skip)
+                ->get(['id', 'title', 'content', 'created_at']);
+            if (!$articles)
+                return err('该分类没有文章');
+
+            foreach($articles as $item){
+                $item->tags = tag_ins()->where('article_id', $item->id)->get(['tag']);
+            }    
+            
+            return suc(['sort' => rq('sort'), 'data' => $articles]);
+        }
         
+        // 查看所有文章
         $list = $this
             ->orderBy('created_at')
             ->limit($limit)
             ->skip($skip)
-            ->get();
-            // ->get(['id', 'title', 'content', 'created_at']);
-
+            ->get(['id', 'title', 'content', 'created_at']);
+            // ->get();
+        foreach($list as $item){
+            $item->tags = tag_ins()->where('article_id', $item->id)->get(['tag']);
+        }  
         return suc(['data' => $list]);
     }        
 
@@ -146,7 +193,7 @@ class article extends Model
             $articles = $this
                 ->whereYear('created_at', rq('year'))
                 ->get();
-            // var_dump($articles);
+
             if (!$articles->first()){
                 return err('该年份没有文章');
             }
@@ -160,4 +207,5 @@ class article extends Model
             ->toArray();
         return suc(['data' => $timeline]);
     }
+
 }
