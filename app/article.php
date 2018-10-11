@@ -128,10 +128,6 @@ class article extends Model
 
     // 按年月查询文章
     public function times() {
-        // 按年月查询
-        if (!rq('year')){
-            return err('year is required');
-        }
 
         if (rq('year') && rq('month')) 
         {
@@ -156,5 +152,12 @@ class article extends Model
             }
             return suc(['data' => $articles]);
         }
+
+        // 获取时间线，获取每个月份的文章数量
+        $timeline =  $this
+            ->groupBy('date')
+            ->get([DB::raw('DATE_FORMAT(created_at, \'%Y年%m月\') as date'),DB::raw('COUNT(*) as value')])
+            ->toArray();
+        return suc(['data' => $timeline]);
     }
 }

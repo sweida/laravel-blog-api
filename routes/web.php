@@ -54,6 +54,14 @@ function tag_ins(){
     return new App\tag;
 }
 
+function webinfo_ins(){
+    return new App\Webinfo;
+}
+
+function link_ins(){
+    return new App\Link;
+}
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -179,4 +187,26 @@ Route::any('api/tag/read', function() {
 // 按月份查询
 Route::any('api/article/times', function() {
     return article_ins()->times();
+});
+
+// 网站信息
+Route::any('api/webinfo/add', function() {
+    return webinfo_ins()->add();
+});
+
+// 友情连接
+Route::any('api/link/add', function() {
+    return link_ins()->add();
+});
+
+Route::any('api/link/change', function() {
+    return link_ins()->change();
+});
+
+Route::any('api/link/remove', function() {
+    return link_ins()->remove();
+});
+
+Route::any('api/link/read', function() {
+    return link_ins()->read();
 });
