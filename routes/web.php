@@ -179,6 +179,10 @@ Route::any('api/article/restored', function() {
     return article_ins()->restored();
 });
 
+Route::any('api/article/like', function() {
+    return article_ins()->like();
+});
+
 Route::any('api/article/read', function() {
     return article_ins()->read();
 });

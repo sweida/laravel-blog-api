@@ -53,11 +53,17 @@ class article extends Model
 
     // 修改文章
     public function change() {
+        $newtag = explode(",",rq('tag'));
+
+        $tags = tag_ins()->where('article_id', 3)->get(['tag']);
+
+        return suc(['data' => $tags, 'newdata' => $newtag]);
+
         if (!rq('id')){
             return err('id is required');
         }
 
-        $article = $this->find(rq('id'));
+        $article = $this::withTrashed()->find(rq('id'));
 
         if (!$article)
             return err('找不到该文章');
@@ -71,25 +77,28 @@ class article extends Model
         if (rq('sort')){
             $article->sort = rq('sort');
         }
+        
+        // 修改标签
         $tag = true;
-        // if (rq('tag')){
-        //     $tagArr = explode(",",rq('tag'));
+        if (rq('tag')){
+            $tagArr = explode(",",rq('tag'));
 
-        //     // 将每个标签遍历插入数据库
-        //     foreach($tagArr as $value){
+            // 将每个标签遍历插入数据库
+            foreach($tagArr as $value){
 
-        //         $tag = DB::table('tags')->insert([
-        //             'tag' => $value,
-        //             'article_id' => rq('id')
-        //         ]);
-        //     }
-        // }
+                $tag = DB::table('tags')->insert([
+                    'tag' => $value,
+                    'article_id' => rq('id')
+                ]);
+            }
+        }
+        
         return ($article->save() && $tag) ? 
             suc(['msg' => '修改成功']) :
-            err('db inster failed');
+            err('db insert failed');
     }
 
-    // 删除文章
+    // 下架文章
     public function remove()
     {
         // 检查传参是否有id
@@ -111,20 +120,20 @@ class article extends Model
     public function restored() {
         // 检查传参是否有id
         if (!rq('id'))
-            return ['status' => 0, 'msg' => 'id is required'];
+            return err('id is required');
 
         return $this::withTrashed()->find(rq('id'))->restore() ?
             suc(['msg' => '文章已经恢复']) :
             err('db update failed');
     }
 
-    // 查看文章
+    // 查看文章 (包括下架的)
     public function read() {
         // 查看指定id
         if (rq('id'))
         {
             
-            $article = $this->find(rq('id'));
+            $article = $this::withTrashed()->find(rq('id'));
             // 查找指定id是否存在
             if (!$article)
                 return err('article not exists');
@@ -160,18 +169,46 @@ class article extends Model
             return suc(['sort' => rq('sort'), 'data' => $articles]);
         }
         
-        // 查看所有文章
-        $list = $this
-            ->orderBy('created_at')
-            ->limit($limit)
-            ->skip($skip)
-            ->get(['id', 'title', 'content', 'created_at']);
-            // ->get();
+        if (rq('delete'))
+        {
+            // 查看所有文章 (包括下架的文章)
+            $list = $this::withTrashed()
+                ->orderBy('created_at')
+                ->limit($limit)
+                ->skip($skip)
+                ->get(['id', 'title', 'content', 'created_at', 'deleted_at']);
+        } else {
+            // 查看所有文章
+            $list = $this
+                ->orderBy('created_at')
+                ->limit($limit)
+                ->skip($skip)
+                ->get(['id', 'title', 'content', 'created_at', 'deleted_at']);
+        }
+
+        // 拿回文章的标签
         foreach($list as $item){
             $item->tags = tag_ins()->where('article_id', $item->id)->get(['tag']);
         }  
+
         return suc(['data' => $list]);
     }        
+
+    // 点赞文章
+    public function like() {
+        if (!rq('id'))
+            return err('id is required');
+        
+        $article = $this->find(rq('id'));
+        if (!$article)
+            return err('article not exists');
+
+        $article->like +=1;
+
+        return $article->save() ?
+            suc(['msg' => '点赞成功']):
+            err('db insert failed');
+    }
 
     // 按年月查询文章
     public function times() {

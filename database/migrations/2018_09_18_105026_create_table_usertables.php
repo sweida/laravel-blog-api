@@ -21,6 +21,7 @@ class CreateTableUsertables extends Migration
             $table->text('avatar_url')->nullable();
             $table->string('password');
             $table->text('intro')->nullable();
+            $table->string('isadmin')->nullable();
             $table->timestamps();
             // unique 唯一
         });

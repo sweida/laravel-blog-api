@@ -13,22 +13,29 @@ class tag extends Model
         if (rq('article_id'))
         {
             // 查找指定id是否存在
-            $article = $this->where('article_id', rq('article_id'))->get();
+            $article = $this->where('article_id', rq('article_id'))->get(['tag']);
 
-            if (!$article)
-                return err('该标签找不到文章');
-            return suc(['data' => $article]);
+            if (!$article->first())
+                return err('该文章没有标签');
+            return suc(['article_id' => rq('article_id'), 'data' => $article]);
         }
 
         // 查看标签的所有文章
         if (rq('tag'))
         {
-            // 查找指定id是否存在
-            $articles = $this->where('tag', rq('tag'))->get();
+            // 查找指定id是否存在 (拿到文章详情)
+            $articles = $this
+                ->with('article')
+                ->where('tag', rq('tag'))
+                ->get(['article_id']);
+        
+            // 返回没有删除的文章
+            $articles = $articles->where('article','!=', null);
 
-            if (!$articles)
+            if (!$articles->first())
                 return err('该标签找不到文章');
-            return suc(['data' => $articles]);
+                
+            return suc(['tag' => rq('tag'), 'data' => $articles]);
         }
 
         $taglist =  $this
@@ -36,5 +43,10 @@ class tag extends Model
             ->pluck('tag');
 
         return suc(['data' => $taglist]);
+    }
+
+    // 关联articles表
+    public function article() {
+        return $this->belongsTo('App\article');
     }
 }
