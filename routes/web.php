@@ -66,6 +66,10 @@ function message_ins(){
     return new App\message;
 }
 
+function ad_ins(){
+    return new App\ad;
+}
+
 Route::get('/', function () {
     return view('welcome');
 });
@@ -234,4 +238,21 @@ Route::any('api/message/change', function() {
 
 Route::any('api/message/remove', function() {
     return message_ins()->remove();
+});
+
+// 广告
+Route::any('api/ad/add', function() {
+    return ad_ins()->add();
+});
+
+Route::any('api/ad/change', function() {
+    return ad_ins()->change();
+});
+
+Route::any('api/ad/remove', function() {
+    return ad_ins()->remove();
+});
+
+Route::any('api/ad/read', function() {
+    return ad_ins()->read();
 });

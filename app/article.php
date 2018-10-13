@@ -53,11 +53,6 @@ class article extends Model
 
     // 修改文章
     public function change() {
-        $newtag = explode(",",rq('tag'));
-
-        $tags = tag_ins()->where('article_id', 3)->get(['tag']);
-
-        return suc(['data' => $tags, 'newdata' => $newtag]);
 
         if (!rq('id')){
             return err('id is required');
@@ -80,19 +75,33 @@ class article extends Model
         
         // 修改标签
         $tag = true;
+
         if (rq('tag')){
-            $tagArr = explode(",",rq('tag'));
+            // 新的标签值
+            $newtag = explode(",",rq('tag'));
 
-            // 将每个标签遍历插入数据库
-            foreach($tagArr as $value){
+            // 旧的标签值
+            $tags = tag_ins()->where('article_id', rq('id'))->get(['tag']);
+            $tags= array_column($tags->toArray(), 'tag');
 
-                $tag = DB::table('tags')->insert([
-                    'tag' => $value,
-                    'article_id' => rq('id')
-                ]);
+            sort($newtag);
+            sort($tags);
+
+            // 如果不同
+            if ($newtag != $tags) {
+                // 先删除数据
+                tag_ins()->where('article_id', rq('id'))->delete();
+
+                // 再添加新的数据
+                foreach($newtag as $value){
+                    $tag = DB::table('tags')->insert([
+                        'tag' => $value,
+                        'article_id' => rq('id')
+                    ]);
+                }
             }
         }
-        
+
         return ($article->save() && $tag) ? 
             suc(['msg' => '修改成功']) :
             err('db insert failed');
