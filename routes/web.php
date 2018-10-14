@@ -87,6 +87,18 @@ Route::any('api/login', function() {
     return user_ins()->login();
 });
 
+// 后台登录
+Route::any('api/admin/login', function() {
+    return user_ins()->login();
+})->middleware('adminlogin');
+
+
+// Route::group(['middleware' => 'adminlogin'], function () {
+//     Route::any('api/admin/login', function() {
+//         return user_ins()->login();
+//     });
+// });
+
 Route::any('api/logout', function() {
     return user_ins()->logout();
 });
@@ -167,20 +179,22 @@ Route::any('api/comment/remove', function() {
 Route::any('api/timeline', 'CommonController@timeline');
 
 // article
-Route::any('api/article/add', function() {
-    return article_ins()->add();
-});
+// 中间件，管理员权限
+Route::group(['middleware' => ['adminRole']], function () {
+    Route::any('api/article/add', function() {
+        return article_ins()->add();
+    });
+    Route::any('api/article/change', function() {
+        return article_ins()->change();
+    });
 
-Route::any('api/article/change', function() {
-    return article_ins()->change();
-});
+    Route::any('api/article/remove', function() {
+        return article_ins()->remove();
+    });
 
-Route::any('api/article/remove', function() {
-    return article_ins()->remove();
-});
-
-Route::any('api/article/restored', function() {
-    return article_ins()->restored();
+    Route::any('api/article/restored', function() {
+        return article_ins()->restored();
+    });
 });
 
 Route::any('api/article/like', function() {

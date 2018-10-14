@@ -17,7 +17,7 @@ class DatabaseSeeder extends Seeder
         $user->username = '佟丽娅';
         $user->email = '123@qq.com';
         $user->password = bcrypt('123456');
-        $user->isadmin = 1;
+        $user->is_admin = 1;
         $user->save();
     }
 }

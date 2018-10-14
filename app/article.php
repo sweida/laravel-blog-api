@@ -13,6 +13,14 @@ class article extends Model
     // 创建文章
     public function add()
     {   
+        // // 检查用户是否登陆
+        // if (!user_ins()->is_login())
+        //     return err('还未登录');
+
+        // // 管理员权限
+        // $user = user_ins()->find(session('user_id'));
+        // if ($user['is_admin'] != 1)
+        //     return err('没有权限');
 
         // 检查是否有标题
         if (!rq('title'))
@@ -20,15 +28,9 @@ class article extends Model
         
         $this->title = rq('title');
         $this->content = rq('content');
-        $this->sort = rq('sort');
+        $this->classify = rq('classify');
             
         $aritcle = $this->save();
-        // $article->tags()
-        //     ->newPivotStatement()
-        //     ->where('tag', rq('tag'))
-        //     ->delete();
-
-        // tags()->attach($this->id, ['tag' => rq('tag')]);
 
         // 将拿到的标签分割字符串
         $tag = true;
@@ -37,7 +39,6 @@ class article extends Model
 
             // 将每个标签遍历插入数据库
             foreach($tagArr as $value){
-
                 $tag = DB::table('tags')->insert([
                     'tag' => $value,
                     'article_id' => $this->id
