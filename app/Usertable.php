@@ -51,23 +51,27 @@ class Usertable extends Model
     // 获取用户信息
     public function read()
     {
-        if (!rq('id'))
-            return err('required user id');
-        
-        // 查询指定的字段
-        $get = ['id', 'username', 'intro'];
-        $user = $this->find(rq('id'), $get);
-        $data = $user->toArray();
+        // 获取单个用户
+        if (rq('id'))
+        {
+            $user = $this->find(rq('id'));
 
-        // $question_count = question_ins()->where('user_id', rq('id'))->count();
-        // $answer_count = answer_ins()->where('user_id', rq('id'))->count();
-        $questions = question_ins()->where('user_id', rq('id'))->get();
-        $answers = answer_ins()->where('user_id', rq('id'))->get();
+            // 用户的评论
+            if ($user) {
+                $comment = comment_ins()->where('user_id', rq('id'))->get();
+                $user['comment'] = $comment;
+                return suc(['data' => $user]); 
+            } else {
+                return err('用户不存在');
+            }                
+        }    
 
-        $data['answers'] = $answers;
-        $data['questions'] = $questions;
+        // 所有用户
+        $users = $this
+            ->orderBy('created_at')
+            ->get();
 
-        return suc(['data' => $data]);
+        return suc(['data' => $users]);
     }
 
     // 获取所有用户列表
@@ -277,4 +281,8 @@ class Usertable extends Model
             ->withTimestamps();
     }    
 
+    // 表格隐藏的字段
+    protected $hidden = [
+        'password', 'remember_token', 'phone_captcha'
+    ];
 }

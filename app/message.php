@@ -57,7 +57,7 @@ class message extends Model
         }
 
         $message = $this->find(rq('id'));
-        $message->content = rq('content');
+        
         if (!$message) 
             return err('id不存在');
 
@@ -67,7 +67,8 @@ class message extends Model
         if ($message->user_id != session('user_id')) {
             return err('你没有权限修改！');
         }
-
+        $message->content = rq('content');
+        
         return $message->save() ?
             suc(['msg' => '修改成功！']) :
             err('db changes failed');

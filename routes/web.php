@@ -34,17 +34,13 @@ function user_ins(){
     return new App\Usertable;
 }
 
-function question_ins(){
-    return new App\Question;
-}
+// function question_ins(){
+//     return new App\Question;
+// }
 
-function answer_ins(){
-    return new App\Answer;
-}
-
-function comment_ins(){
-    return new App\Comment;
-}
+// function answer_ins(){
+//     return new App\Answer;
+// }
 
 function article_ins(){
     return new App\article;
@@ -64,6 +60,10 @@ function link_ins(){
 
 function message_ins(){
     return new App\message;
+}
+
+function comment_ins(){
+    return new App\comment;
 }
 
 function ad_ins(){
@@ -91,13 +91,6 @@ Route::any('api/login', function() {
 Route::any('api/admin/login', function() {
     return user_ins()->login();
 })->middleware('adminlogin');
-
-
-// Route::group(['middleware' => 'adminlogin'], function () {
-//     Route::any('api/admin/login', function() {
-//         return user_ins()->login();
-//     });
-// });
 
 Route::any('api/logout', function() {
     return user_ins()->logout();
@@ -129,52 +122,39 @@ Route::any('api/user/validata_captcha', function() {
     return user_ins()->validata_captcha();
 });
 
-// 提问
-Route::any('api/question/add', function() {
-    return question_ins()->add();
-});
+// // 提问
+// Route::any('api/question/add', function() {
+//     return question_ins()->add();
+// });
 
-Route::any('api/question/change', function() {
-    return question_ins()->change();
-});
+// Route::any('api/question/change', function() {
+//     return question_ins()->change();
+// });
 
-Route::any('api/question/read', function() {
-    return question_ins()->read();
-});
+// Route::any('api/question/read', function() {
+//     return question_ins()->read();
+// });
 
-Route::any('api/question/remove', function() {
-    return question_ins()->remove();
-});
+// Route::any('api/question/remove', function() {
+//     return question_ins()->remove();
+// });
 
-// 回答
-Route::any('api/answer/add', function() {
-    return answer_ins()->add();
-});
+// // 回答
+// Route::any('api/answer/add', function() {
+//     return answer_ins()->add();
+// });
 
-Route::any('api/answer/change', function() {
-    return answer_ins()->change();
-});
+// Route::any('api/answer/change', function() {
+//     return answer_ins()->change();
+// });
 
-Route::any('api/answer/read', function() {
-    return answer_ins()->read();
-});
+// Route::any('api/answer/read', function() {
+//     return answer_ins()->read();
+// });
 
-Route::any('api/answer/vote', function() {
-    return answer_ins()->vote();
-});
-
-// 评论
-Route::any('api/comment/add', function() {
-    return comment_ins()->add();
-});
-
-Route::any('api/comment/read', function() {
-    return comment_ins()->read();
-});
-
-Route::any('api/comment/remove', function() {
-    return comment_ins()->remove();
-});
+// Route::any('api/answer/vote', function() {
+//     return answer_ins()->vote();
+// });
 
 Route::any('api/timeline', 'CommonController@timeline');
 
@@ -190,6 +170,10 @@ Route::group(['middleware' => ['adminRole']], function () {
 
     Route::any('api/article/remove', function() {
         return article_ins()->remove();
+    });
+
+    Route::any('api/article/delete', function() {
+        return article_ins()->reallyDelete();
     });
 
     Route::any('api/article/restored', function() {
@@ -269,4 +253,21 @@ Route::any('api/ad/remove', function() {
 
 Route::any('api/ad/read', function() {
     return ad_ins()->read();
+});
+
+// 评论文章
+Route::any('api/comment/add', function() {
+    return comment_ins()->add();
+});
+
+Route::any('api/comment/read', function() {
+    return comment_ins()->read();
+});
+
+Route::any('api/comment/remove', function() {
+    return comment_ins()->remove();
+});
+
+Route::any('api/comment/change', function() {
+    return comment_ins()->change();
 });

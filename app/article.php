@@ -122,10 +122,28 @@ class article extends Model
 
         // 软删除，永久删除用 forceDelete()
         return $article->delete() ?
-            ['status' => 1, 'msg' => '删除成功'] : 
+            ['status' => 1, 'msg' => '下架成功'] : 
             ['status' => 0, 'msg' => 'db delete failed'];
     }
     
+    // 真删除
+    public function reallyDelete() {
+        // 检查传参是否有id
+        if (!rq('id'))
+            return ['status' => 0, 'msg' => 'id is required'];
+        
+        $article = $this->find(rq('id'));
+        // 检查传参id是否存在
+        if (!$article)
+            return ['status' => 0, 'msg' => 'id不存在'];
+
+        $tags = tag_ins()->where('article_id', rq('id'))->delete();
+
+        return $article->forceDelete() && $tags ?
+            ['status' => 1, 'msg' => '删除成功'] : 
+            ['status' => 0, 'msg' => 'db delete failed'];
+    }
+
     // 恢复文章
     public function restored() {
         // 检查传参是否有id

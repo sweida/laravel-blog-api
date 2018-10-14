@@ -4,111 +4,97 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Comment extends Model
+class comment extends Model
 {
-    // 添加评论
-    public function add()
-    {
-        // 检查用户是否登陆
-        if (!user_ins()->is_login())
-            return err('还未登录');
+    //添加评论
+    public function add() {
+        if (!rq('article_id') || !rq('content'))
+            return err('article_id and content are required');
 
-        if (!rq('content'))
-            return err('评论不能为空');
-        
-        // 检查是否有评论或者回答
-        if ( (!rq('question_id') && !rq('answer_id')) || (rq('question_id') && rq('answer_id')) )
-            return err('question_id or answer_id is required');
+        $article = article_ins()->find(rq('article_id'));
+        if (!$article)
+            return err('文章不存在');
 
-        if (rq('question_id'))
-        {
-            // 评论问题
-            $question = question_ins()->find(rq('question_id'));
-            if (!$question)
-                return err('问题不存在');
+        // 登录的拿到用户id，没有登录的可以填用户名
+        if (session('user_id'))
+            $this->user_id = session('user_id');
+        else
+            $this->username = rq('username');
 
-            $this->question_id = rq('question_id');
-        } else 
-        {
-            // 评论答案
-            $answer = answer_ins()->find(rq('answer_id'));
-            if (!$answer)
-                return err('回答不存在');
-
-            $this->answer_id = rq('answer_id');
-        }
-
-        // 回复评论
-        if (rq('reply_to'))
-        {
-            $target = $this->find(rq('reply_to'));
-            // 检查评论id是否存在
-            if (!$target)
-                return err('target comment not exists');
-
-            if ($target->user_id == session('user_id'))
-                return err('不能回复自己');
-
-            $this->reply_to = rq('reply_to');
-        }
-
-        // 保存数据
         $this->content = rq('content');
-        $this->user_id = session('user_id');
+        $this->article_id = rq('article_id');
 
-        return $this->save() ?
-            suc() :
+        return $this->save() ? 
+            suc(['mgs' => '评论成功']) :
             err('db insert failed');
     }
-    
-    // 查看评论
-    public function read()
-    {
-        if (!rq('question_id') && !rq('answer_id'))
-            return err('question_id or answer_id is required');
 
-        if(rq('question_id'))
-        {
-            $question = question_ins()->find(rq('question_id'));
-            if (!$question)
-                return err('问题不存在');
-
-            $data = $this->where('question_id', rq('question_id'));
-        } else
-        {
-            $answer = answer_ins()->find(rq('answer_id'));
-            if (!$answer)
-                return err('回答不存在');
-            
-            $data = $this->where('answer_id', rq('answer_id'));
-        }
-
-        return suc($data->get());
-    }
-
-    // 删除评论
-    public function remove()
-    {
-        // 检查用户是否登陆
-        if (!user_ins()->is_login())
-            return err('还未登录');
-        
+    public function remove() {
         if (!rq('id'))
             return err('id is required');
-        
-        $comment = $this->find(rq('id'));
-        if (!$comment)
-            return err('找不到该评论');
-        
-        if ($comment->user_id != session('user_id'))
-            return err('你没有权限删除');
-        
-        // 先删除此评论下的所有评论
-        $this->where('reply_to', rq('id'))->delete();
 
-        // 删除此评论
+        $comment = $this->find(rq('id'));
+        if (!$comment) 
+            return err('id不存在');
+
+        // 如果不是管理员
+        $user = user_ins()->find(session('user_id'));
+        if ($user->is_admin != 1) {
+            if (!$comment->user_id)
+                return err('匿名评论不能删除！');
+
+            if ($comment->user_id != session('user_id'))
+                return err('你没有权限删除！');
+        }
+
         return $comment->delete() ?
-            suc() :
+            suc(['msg' => '删除成功！']) :
             err('db delete failed');
+    }
+
+    public function change() {
+        if (!rq('id') || !rq('content')) 
+            return err('id and content are required');
+
+        $comment = $this->find(rq('id'));
+        if (!$comment) 
+            return err('id不存在');
+
+        if (!$comment->user_id)
+            return err('匿名留言不能修改！');
+
+        if ($comment->user_id != session('user_id')) {
+            return err('你没有权限修改！');
+        }
+
+        $comment->content = rq('content');
+
+        return $comment->update() ?
+            suc(['msg' => '修改成功！']) :
+            err('db update failed');
+    }
+
+    public function read() {
+        // 查找单个文章的评论
+        if (rq('article_id')) {
+            $comments = $this->where('article_id', rq('article_id'))->get();
+            if (!$comments->first())
+                return err('该文章没有评论');
+            return suc(['data' => $comments]);
+        }
+
+        // 查找单个人的评论
+        if (rq('user_id')) {
+            $comments = $this->where('user_id', rq('user_id'))->get();
+            if (!$comments->first())
+                return err('该用户还没有评论');
+            return suc(['data' => $comments]);
+        }
+
+        $comments = $this
+            ->orderBy('created_at')
+            ->get();
+        
+        return suc(['data' => $comments]);
     }
 }
