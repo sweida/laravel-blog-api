@@ -52,14 +52,17 @@ class Usertable extends Model
     public function read()
     {
         // 获取单个用户
-        if (rq('id'))
+        if (rq('user_id'))
         {
-            $user = $this->find(rq('id'));
+            $user = $this->find(rq('user_id'));
 
             // 用户的评论
             if ($user) {
-                $comment = comment_ins()->where('user_id', rq('id'))->get();
-                $user['comment'] = $comment;
+                $comments = comment_ins()->read();
+                $messages = message_ins()->read();
+                // $messages = message_ins()->where('user_id', rq('user_id'))->get(['content']);
+                $user['comments'] = $comments;
+                $user['messages'] = $messages;
                 return suc(['data' => $user]); 
             } else {
                 return err('用户不存在');

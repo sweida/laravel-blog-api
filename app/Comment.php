@@ -83,7 +83,7 @@ class comment extends Model
             return suc(['data' => $comments]);
         }
 
-        // 查找单个人的评论
+        // 查找单个用户的评论
         if (rq('user_id')) {
             $comments = $this->where('user_id', rq('user_id'))->get();
             if (!$comments->first())
@@ -91,6 +91,7 @@ class comment extends Model
             return suc(['data' => $comments]);
         }
 
+        // 获取所有评论
         $comments = $this
             ->orderBy('created_at')
             ->get();

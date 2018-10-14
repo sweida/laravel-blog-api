@@ -68,7 +68,7 @@ class message extends Model
             return err('你没有权限修改！');
         }
         $message->content = rq('content');
-        
+
         return $message->save() ?
             suc(['msg' => '修改成功！']) :
             err('db changes failed');
@@ -76,6 +76,21 @@ class message extends Model
 
     // 关联表查询指定字段
     public function read() {
+        // 查看指定用户
+        if (rq('user_id')) {
+            $user = user_ins()->find(rq('user_id'));
+            if (!$user)
+                return err('没有该用户');
+            $messages = $this
+                ->where('user_id', rq('user_id'))
+                ->get();
+            if (!$messages->first())
+                return err('该用户没有留言');    
+
+            return suc(['user' => $user->username, 'data' => $messages]);
+        }
+
+        // 查看所有留言
         $messages = $this
             ->with(['user'=>function($query){
                 $query->select('id','username');
