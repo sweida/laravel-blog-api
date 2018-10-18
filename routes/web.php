@@ -263,7 +263,7 @@ Route::group(['prefix' => 'api/ad', 'middleware' => ['adminRole']], function () 
 
 
 // 评论文章
-Route::group(['prefix' => 'api/comment', 'middleware' => ['adminRole']], function () {
+Route::group(['prefix' => 'api/comment'], function () {
     Route::any('add', function() {
         return comment_ins()->add();
     });
