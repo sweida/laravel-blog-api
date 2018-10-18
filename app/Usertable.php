@@ -79,8 +79,8 @@ class Usertable extends Model
             ->orderBy('created_at')
             ->limit($limit)
             ->skip($skip)
-            ->get(['id', 'username', 'avatar_url', 'email'])
-            ->keyBy('id');
+            ->get(['id', 'username', 'is_admin', 'created_at', 'avatar_url', 'email']);
+            // ->keyBy('id');
 
         // 查看所有提问，默认15条
         return suc(['data' => $users]);
