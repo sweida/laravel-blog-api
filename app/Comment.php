@@ -93,9 +93,23 @@ class comment extends Model
 
         // 获取所有评论
         $comments = $this
-            ->orderBy('created_at')
+            ->with(['user'=>function($query){
+                $query->select('id','username');
+            }])
+            ->with(['article'=>function($query){
+                $query->select('id', 'title');
+            }])
+            ->orderBy('created_at', 'desc')
             ->get();
         
         return suc(['data' => $comments]);
+    }
+
+    public function user() {
+        return $this->belongsTo('App\Usertable');
+    }
+
+    public function article() {
+        return $this->belongsTo('App\article');
     }
 }

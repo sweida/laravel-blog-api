@@ -17,9 +17,9 @@ class CreateArticlesTable extends Migration
             $table->increments('id');
             $table->string('title');
             $table->text('content')->nullable();
-            $table->integer('clicks')->nullable();
+            $table->integer('clicks')->nullable()->default(0);
             $table->string('classify')->nullable();
-            $table->integer('like')->nullable();
+            $table->integer('like')->nullable()->default(0);
             $table->softDeletes();
             $table->timestamps();
         });

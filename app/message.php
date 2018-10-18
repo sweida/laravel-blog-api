@@ -95,7 +95,7 @@ class message extends Model
             ->with(['user'=>function($query){
                 $query->select('id','username');
              }])
-            ->orderBy('created_at')
+            ->orderBy('created_at', 'desc')
             ->get();
 
         return $messages ?

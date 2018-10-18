@@ -160,7 +160,6 @@ class article extends Model
         // 查看指定id
         if (rq('id'))
         {
-            
             $article = $this::withTrashed()->find(rq('id'));
             // 查找指定id是否存在
             if (!$article)
@@ -197,21 +196,21 @@ class article extends Model
             return suc(['sort' => rq('sort'), 'data' => $articles]);
         }
         
-        if (rq('delete'))
+        if (rq('all'))
         {
             // 查看所有文章 (包括下架的文章)
             $list = $this::withTrashed()
-                ->orderBy('created_at')
+                ->orderBy('created_at', 'desc')
                 ->limit($limit)
                 ->skip($skip)
-                ->get(['id', 'title', 'content', 'created_at', 'deleted_at']);
+                ->get(['id', 'title', 'content', 'classify', 'created_at', 'deleted_at', 'clicks', 'like']);
         } else {
             // 查看所有文章
             $list = $this
-                ->orderBy('created_at')
+                ->orderBy('created_at', 'desc')
                 ->limit($limit)
                 ->skip($skip)
-                ->get(['id', 'title', 'content', 'created_at', 'deleted_at']);
+                ->get(['id', 'title', 'content', 'classify', 'created_at', 'deleted_at', 'clicks', 'like']);
         }
 
         // 拿回文章的标签

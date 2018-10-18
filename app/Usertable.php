@@ -79,39 +79,32 @@ class Usertable extends Model
             ->orderBy('created_at')
             ->limit($limit)
             ->skip($skip)
-            ->get(['id', 'username', 'is_admin', 'created_at', 'avatar_url', 'email']);
+            ->get(['id', 'username', 'is_admin', 'created_at', 'updated_at', 'avatar_url', 'email']);
             // ->keyBy('id');
 
         // 查看所有提问，默认15条
         return suc(['data' => $users]);
-
-        // // 所有用户
-        // $users = $this
-        //     ->orderBy('created_at')
-        //     ->get();
-
-        // return suc(['data' => $users]);
     }
 
-    // 获取所有用户列表
-    public function userlist()
-    {
-        // 每页多少条
-        $limit = rq('limit') ?: 10;
-        // 页码，从第limit条开始
-        $skip = (rq('page') ? rq('page')-1 : 0) * $limit;
+    // // 获取所有用户列表
+    // public function userlist()
+    // {
+    //     // 每页多少条
+    //     $limit = rq('limit') ?: 10;
+    //     // 页码，从第limit条开始
+    //     $skip = (rq('page') ? rq('page')-1 : 0) * $limit;
 
-        // 按创建时间排序
-        $list = $this
-            ->orderBy('created_at')
-            ->limit($limit)
-            ->skip($skip)
-            ->get(['id', 'username', 'is_admin', 'created_at', 'avatar_url', 'email']);
-            // ->keyBy('id');
+    //     // 按创建时间排序
+    //     $list = $this
+    //         ->orderBy('created_at')
+    //         ->limit($limit)
+    //         ->skip($skip)
+    //         ->get(['id', 'username', 'is_admin', 'created_at', 'avatar_url', 'email']);
+    //         // ->keyBy('id');
 
-        // 查看所有提问，默认15条
-        return ['status' => 0, 'data' => $list];
-    }
+    //     // 查看所有提问，默认15条
+    //     return ['status' => 0, 'data' => $list];
+    // }
 
     // 登录api
     public function login()
