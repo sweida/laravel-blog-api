@@ -13,15 +13,6 @@ class article extends Model
     // 创建文章
     public function add()
     {   
-        // // 检查用户是否登陆
-        // if (!user_ins()->is_login())
-        //     return err('还未登录');
-
-        // // 管理员权限
-        // $user = user_ins()->find(session('user_id'));
-        // if ($user['is_admin'] != 1)
-        //     return err('没有权限');
-
         // 检查是否有标题
         if (!rq('title'))
             return ['status' => 0, 'msg' => 'required title'];
@@ -64,16 +55,16 @@ class article extends Model
         if (!$article)
             return err('找不到该文章');
 
-        if (rq('title')){
+        if (rq('title'))
             $article->title = rq('title');
-        }
-        if (rq('content')){
+        if (rq('content'))
             $article->content = rq('content');
-        }
-        if (rq('sort')){
+        if (rq('sort'))
             $article->sort = rq('sort');
-        }
-        
+        if (rq('classify'))
+            $article->classify = rq('classify');
+        if (rq('created_at'))
+            $article->created_at = rq('created_at');
         // 修改标签
         $tag = true;
 
@@ -160,15 +151,17 @@ class article extends Model
         // 查看指定id
         if (rq('id'))
         {
-            $article = $this::withTrashed()->find(rq('id'));
+            $article = $this::withTrashed()
+                ->find(rq('id'));
             // 查找指定id是否存在
             if (!$article)
                 return err('article not exists');
             // 浏览量
-            $article->clicks += 1;
-            $article->save();
+            // $article->clicks += 1;
+            // $article->save();
             // 获取文章标签
-            $article->tags = tag_ins()->where('article_id', rq('id'))->get(['tag']);
+            $tag = tag_ins()->where('article_id', rq('id'))->get(['tag']);
+            $article->tag = array_column($tag->toArray(), 'tag');
 
             return suc(['data' => $article]);
         }
@@ -190,7 +183,8 @@ class article extends Model
                 return err('该分类没有文章');
 
             foreach($articles as $item){
-                $item->tags = tag_ins()->where('article_id', $item->id)->get(['tag']);
+                $tag = tag_ins()->where('article_id', $item->id)->get(['tag']);
+                $item->tag = array_column($tag->toArray(), 'tag');
             }    
             
             return suc(['sort' => rq('sort'), 'data' => $articles]);
@@ -215,7 +209,8 @@ class article extends Model
 
         // 拿回文章的标签
         foreach($list as $item){
-            $item->tags = tag_ins()->where('article_id', $item->id)->get(['tag']);
+            $tag = tag_ins()->where('article_id', $item->id)->get(['tag']);
+            $item->tag = array_column($tag->toArray(), 'tag');
         }  
 
         return suc(['data' => $list]);
@@ -270,6 +265,10 @@ class article extends Model
             ->get([DB::raw('DATE_FORMAT(created_at, \'%Y年%m月\') as date'),DB::raw('COUNT(*) as value')])
             ->toArray();
         return suc(['data' => $timeline]);
+    }
+
+    public function tag() {
+        return $this->belongsTo('App\tag');
     }
 
 }
