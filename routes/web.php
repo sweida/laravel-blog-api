@@ -199,9 +199,13 @@ Route::any('api/tag/read', function() {
 });
 
 // 网站信息
-Route::any('api/webinfo/add', function() {
-    return webinfo_ins()->add();
+Route::any('api/webinfo/set', function() {
+    return webinfo_ins()->setting();
 })->middleware('adminRole');
+
+Route::any('api/webinfo/read', function() {
+    return webinfo_ins()->read();
+});
 
 // 友情连接
 Route::group(['prefix' => 'api/link', 'middleware' => ['adminRole']], function () {

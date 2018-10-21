@@ -134,7 +134,7 @@ class Usertable extends Model
         $user->updated_at = time();
 
         return $user->save() ?
-            suc(['msg' => '登录成功', 'user_id' => $user->id]) : 
+            suc(['msg' => '登录成功', 'token' => session('_token'), 'user_id' => $user->id]) : 
             err('服务器有问题，请稍后在登录');
     }
 

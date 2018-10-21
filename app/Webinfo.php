@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Webinfo extends Model
 {
     //网站的信息
-    public function add() {
+    public function setting() {
         // 检查是否第一次添加
         $webinfo = $this->find(1);
         if (!$webinfo) {
@@ -50,6 +50,15 @@ class Webinfo extends Model
         return $webinfo->save() ?
             suc(['msg' => '修改成功']) :
             err('db insert failed');
+    }
+
+    public function read() {
+        $webinfo = $this->find(1);
+        if (!$webinfo)
+            err('还没设置网站信息');
+        return $webinfo?
+            suc(['data' => $webinfo]):
+            err('db get failed');
     }
 
 }

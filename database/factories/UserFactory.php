@@ -26,16 +26,59 @@ $factory->define(App\User::class, function (Faker $faker) {
 $factory->define(App\Usertable::class, function (Faker $faker) {
     return [
         'username' => $faker->name,
-        'email' => $faker->unique()->safeEmail,
+        'email' => $faker->unique()->safeEmail,     // unique 唯一值
         'password' => bcrypt('123456'), // secret
     ];
 });
 
-// // 生成文章
-// $factory->define(App\article::class, function (Faker $faker) {
-//     return [
-//         'title' => $faker->name,
-//         'content' => $faker->unique()->safeEmail,
-//         'password' => bcrypt('123456'), // secret
-//     ];
-// });
+// 生成文章
+$factory->define(App\article::class, function (Faker $faker) {
+    return [
+        'title' => $faker->sentence,
+        'content' => $faker->text,
+        'classify' => $faker->word, 
+    ];
+});
+
+// 生成友情链接
+$factory->define(App\link::class, function (Faker $faker) {
+    return [
+        'title' => $faker->name,
+        'href' => $faker->url,
+        'end_time' => $faker->date($format = 'Y-m-d'), 
+    ];
+});
+
+// 生成基础信息
+$factory->define(App\webinfo::class, function (Faker $faker) {
+    return [
+        'title' => $faker->name,
+        'keyword' => $faker->word,
+        'description' => $faker->text,
+        'icp' => $faker->swiftBicNumber,
+        'weixin' => $faker->url,
+        'zhifubao' => $faker->url,
+        'qq' => $faker->ean8,
+        'phone' => $faker->e164PhoneNumber,
+        'email' => $faker->email,
+        'github' => $faker->url,
+        'personinfo' => $faker->text,
+    ];
+});
+
+// 生成留言
+$factory->define(App\message::class, function (Faker $faker) {
+    return [
+        'content' => $faker->sentence,
+        'user_id' => $faker->numberBetween($min = 1, $max = 10)
+    ];
+});
+
+// 生成评论
+$factory->define(App\comment::class, function (Faker $faker) {
+    return [
+        'content' => $faker->sentence,
+        'user_id' => $faker->numberBetween($min = 1, $max = 10),
+        'article_id' => $faker->numberBetween($min = 1, $max = 10)
+    ];
+});

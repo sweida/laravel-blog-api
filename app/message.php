@@ -36,14 +36,17 @@ class message extends Model
         $message = $this->find(rq('id'));
         if (!$message) 
             return err('id不存在');
+        // 如果不是管理员
+        $user = user_ins()->find(session('user_id'));
+        if ($user->is_admin != 1) {
+            if (!$message->user_id)
+                return err('匿名留言不能删除！');
 
-        if (!$message->user_id)
-            return err('匿名留言不能删除！');
-
-        if ($message->user_id != session('user_id')) {
-            return err('你没有权限删除！');
+            if ($message->user_id != session('user_id')) {
+                return err('你没有权限删除！');
+            }
         }
-
+        
         return $message->delete() ?
             suc(['msg' => '删除成功！']) :
             err('db delete failed');

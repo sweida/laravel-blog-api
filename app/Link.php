@@ -67,15 +67,20 @@ class Link extends Model
 
     // 获取全部友情连接，（只获取有效期内的，或者没有设置有效期的）
     public function read() {
-        $links = $this
-            ->orderBy('created_at')
-            ->whereDate('end_time', '>=', date('Y-m-d',time()))
-            ->orwhere('end_time', null)
-            ->get(['id', 'title', 'href']);
-        
+        if (rq('all')) {
+            $links = $this
+                ->orderBy('created_at')
+                ->get(['id', 'title', 'href', 'end_time']);
+        } else {
+            $links = $this
+                ->orderBy('created_at')
+                ->whereDate('end_time', '>=', date('Y-m-d',time()))
+                ->orwhere('end_time', null)
+                ->get(['id', 'title', 'href']);
+        }
+
         return $links ?
             suc(['data' => $links]) :
-            err('db get failed');
-            
+            err('db get failed');   
     }
 }
