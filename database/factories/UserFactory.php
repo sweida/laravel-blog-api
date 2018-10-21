@@ -36,10 +36,18 @@ $factory->define(App\article::class, function (Faker $faker) {
     return [
         'title' => $faker->sentence,
         'content' => $faker->text,
-        'classify' => $faker->word, 
+        'classify' => $faker->randomElement($array = array ('前端', '后端', '工具', '随写')),
     ];
 });
 
+// 生成标签
+$factory->define(App\tag::class, function (Faker $faker) {
+    return [
+        'tag' => $faker->randomElement($array = array ('css','html','php', 'laravle', 'vue', 'react')),
+        'article_id' => $faker->numberBetween($min = 1, $max = 15),
+    ];
+});
+        
 // 生成友情链接
 $factory->define(App\link::class, function (Faker $faker) {
     return [
@@ -70,7 +78,7 @@ $factory->define(App\webinfo::class, function (Faker $faker) {
 $factory->define(App\message::class, function (Faker $faker) {
     return [
         'content' => $faker->sentence,
-        'user_id' => $faker->numberBetween($min = 1, $max = 10)
+        'user_id' => $faker->numberBetween($min = 1, $max = 10),
     ];
 });
 
@@ -79,6 +87,6 @@ $factory->define(App\comment::class, function (Faker $faker) {
     return [
         'content' => $faker->sentence,
         'user_id' => $faker->numberBetween($min = 1, $max = 10),
-        'article_id' => $faker->numberBetween($min = 1, $max = 10)
+        'article_id' => $faker->numberBetween($min = 1, $max = 10),
     ];
 });

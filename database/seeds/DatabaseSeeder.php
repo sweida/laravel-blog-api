@@ -11,7 +11,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // $this->call(UsersTableSeeder::class);
+        // // $this->call(UsersTableSeeder::class);
 
         // 生成10个用户
         factory(\App\Usertable::class, 10)->create();
@@ -22,8 +22,13 @@ class DatabaseSeeder extends Seeder
         $user->is_admin = 1;
         $user->save();
 
-        // 生成20篇文章
-        factory(\App\article::class, 20)->create();
+        $user2 = user_ins()->find(2);
+        $user2->username = '周杰伦';
+        $user2->email = 'jay@163.com';
+        $user2->save();
+
+        // 生成15篇文章
+        factory(\App\article::class, 15)->create();
 
         // 生成友情链接
         factory(\App\link::class, 5)->create();
@@ -32,9 +37,12 @@ class DatabaseSeeder extends Seeder
         factory(\App\webinfo::class)->create();
 
         // 生成留言
-        factory(\App\message::class, 10)->create();
+        factory(\App\message::class, 20)->create();
 
         // 生成评论
         factory(\App\comment::class, 20)->create();
+
+        // 生成文章标签
+        // factory(\App\tag::class, 30)->create();
     }
 }
