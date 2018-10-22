@@ -44,7 +44,7 @@ $factory->define(App\article::class, function (Faker $faker) {
 $factory->define(App\tag::class, function (Faker $faker) {
     return [
         'tag' => $faker->randomElement($array = array ('css','html','php', 'laravle', 'vue', 'react')),
-        'article_id' => $faker->numberBetween($min = 1, $max = 15),
+        'article_id' => $faker->numberBetween($min = 1, $max = 10),
     ];
 });
         

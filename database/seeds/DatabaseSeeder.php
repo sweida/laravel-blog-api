@@ -43,6 +43,6 @@ class DatabaseSeeder extends Seeder
         factory(\App\comment::class, 20)->create();
 
         // 生成文章标签
-        // factory(\App\tag::class, 30)->create();
+        factory(\App\tag::class, 30)->create();
     }
 }

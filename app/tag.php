@@ -49,4 +49,6 @@ class tag extends Model
     public function article() {
         return $this->belongsTo('App\article');
     }
+
+    public $timestamps = false;
 }

@@ -1,7 +1,7 @@
 <?php
 
 namespace App;
-
+use Request;
 use Illuminate\Database\Eloquent\Model;
 
 class message extends Model
@@ -29,13 +29,20 @@ class message extends Model
 
     //删除留言，只有登录的才能删除
     public function remove() {
-        if (!rq('id')) {
-            return err('id is required');
-        }
+        if (rq('id')) {
+            $message = $this->find(rq('id'));
+            if (!$message) 
+                return err('id不存在');
+        } else {
+            // 如果不是管理员
+            $user = user_ins()->find(session('user_id'));
+            if ($user->is_admin != 1)
+                return err('你没有权限删除');
 
-        $message = $this->find(rq('id'));
-        if (!$message) 
-            return err('id不存在');
+            return $this->destroy(Request::all())?
+                suc(['msg' => '删除成功！']) :
+                err('找不到需要删除的id');
+        }
         // 如果不是管理员
         $user = user_ins()->find(session('user_id'));
         if ($user->is_admin != 1) {
@@ -46,11 +53,10 @@ class message extends Model
                 return err('你没有权限删除！');
             }
         }
-        
+
         return $message->delete() ?
             suc(['msg' => '删除成功！']) :
             err('db delete failed');
-        
     }
 
     // 修改留言，只有登录的才能修改
