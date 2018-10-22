@@ -68,7 +68,8 @@ class Usertable extends Model
                 return err('用户不存在');
             }                
         }    
-
+        // 分页
+        $total = $this->count();
         // 每页多少条
         $limit = rq('limit') ?: 10;
         // 页码，从第limit条开始
@@ -83,7 +84,7 @@ class Usertable extends Model
             // ->keyBy('id');
 
         // 查看所有提问，默认15条
-        return suc(['data' => $users]);
+        return suc(['data' => $users, 'total' => $total]);
     }
 
     // // 获取所有用户列表

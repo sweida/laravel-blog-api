@@ -91,6 +91,10 @@ class comment extends Model
             return suc(['data' => $comments]);
         }
 
+        // 分页
+        $total = $this->count();
+        $limit = rq('limit') ?: 10;
+        $skip = (rq('page') ? rq('page')-1 : 0) * $limit;
         // 获取所有评论
         $comments = $this
             ->with(['user'=>function($query){
@@ -99,10 +103,12 @@ class comment extends Model
             ->with(['article'=>function($query){
                 $query->select('id', 'title');
             }])
+            ->limit($limit)
+            ->skip($skip)
             ->orderBy('created_at', 'desc')
             ->get();
         
-        return suc(['data' => $comments]);
+        return suc(['data' => $comments, 'total' => $total]);
     }
 
     public function user() {

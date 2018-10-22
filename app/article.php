@@ -192,6 +192,9 @@ class article extends Model
         
         if (rq('all'))
         {
+            // 总数量
+            $total = $this::withTrashed()->count();
+
             // 查看所有文章 (包括下架的文章)
             $list = $this::withTrashed()
                 ->orderBy('created_at', 'desc')
@@ -199,6 +202,7 @@ class article extends Model
                 ->skip($skip)
                 ->get(['id', 'title', 'content', 'classify', 'created_at', 'deleted_at', 'clicks', 'like']);
         } else {
+            $total = $this->count();
             // 查看所有文章
             $list = $this
                 ->orderBy('created_at', 'desc')
@@ -213,7 +217,7 @@ class article extends Model
             $item->tag = array_column($tag->toArray(), 'tag');
         }  
 
-        return suc(['data' => $list]);
+        return suc(['data' => $list, 'total' => $total]);
     }        
 
     // 点赞文章

@@ -99,16 +99,23 @@ class message extends Model
             return suc(['user' => $user->username, 'data' => $messages]);
         }
 
+        // 分页
+        $total = $this->count();
+        $limit = rq('limit') ?: 10;
+        $skip = (rq('page') ? rq('page')-1 : 0) * $limit;
+
         // 查看所有留言
         $messages = $this
             ->with(['user'=>function($query){
                 $query->select('id','username');
              }])
             ->orderBy('created_at', 'desc')
+            ->limit($limit)
+            ->skip($skip)
             ->get();
 
         return $messages ?
-            suc(['data' => $messages]) :
+            suc(['data' => $messages, 'total' => $total]) :
             err('db get failed');
     }
 
