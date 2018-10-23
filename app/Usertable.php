@@ -48,6 +48,14 @@ class Usertable extends Model
         // dd(Request::all());
     }
 
+    public function reads($id){
+        $user = $this->find($id);
+        // return suc(['data' => $user]); 
+        // return suc(['data' => $id]);
+        // return response()->json($user);
+        return response()->json($user);
+    }
+
     // 获取用户信息
     public function read()
     {
@@ -133,6 +141,7 @@ class Usertable extends Model
         // 最后一次登录时间
         // $user->last_login = date('Y-m-d h:i:s',time());
         $user->updated_at = time();
+        // dd(session()->all());
 
         return $user->save() ?
             suc(['msg' => '登录成功', 'token' => session('_token'), 'user_id' => $user->id]) : 

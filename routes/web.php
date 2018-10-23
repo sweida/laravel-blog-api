@@ -101,7 +101,7 @@ Route::any('api/is_login', function() {
 });
 
 Route::any('api/user/read', function() {
-    return user_ins()->read();
+    return (new App\Usertable)->read();
 });
 // 修改密码
 Route::any('api/user/change_password', function() {
@@ -284,3 +284,6 @@ Route::group(['prefix' => 'api/comment'], function () {
         return comment_ins()->change();
     });
 });
+
+// 上传图片
+Route::any('api/img/upload', 'CommonController@img_upload5');
