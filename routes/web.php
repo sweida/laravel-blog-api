@@ -188,6 +188,10 @@ Route::any('api/article/read', function() {
     return article_ins()->read();
 });
 
+Route::any('api/article/classify', function() {
+    return article_ins()->classify();
+});
+
 // 按月份查询
 Route::any('api/article/times', function() {
     return article_ins()->times();
@@ -286,4 +290,6 @@ Route::group(['prefix' => 'api/comment'], function () {
 });
 
 // 上传图片
-Route::any('api/img/upload', 'CommonController@img_upload5');
+Route::any('api/img/upload', 'CommonController@img_upload');
+// 删除文件
+Route::any('api/img/delete', 'CommonController@delete_upload');

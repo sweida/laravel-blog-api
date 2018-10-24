@@ -34,7 +34,7 @@ class tag extends Model
 
             if (!$articles->first())
                 return err('该标签找不到文章');
-                
+
             return suc(['tag' => rq('tag'), 'data' => $articles]);
         }
 

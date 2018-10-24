@@ -59,8 +59,6 @@ class article extends Model
             $article->title = rq('title');
         if (rq('content'))
             $article->content = rq('content');
-        if (rq('sort'))
-            $article->sort = rq('sort');
         if (rq('classify'))
             $article->classify = rq('classify');
         if (rq('created_at'))
@@ -171,11 +169,11 @@ class article extends Model
         $skip = (rq('page') ? rq('page')-1 : 0) * $limit;
 
         // 按分类获取文章
-        if (rq('sort'))
+        if (rq('classify'))
         {
             $articles = $this
                 ->orderBy('created_at')
-                ->where('sort', rq('sort'))
+                ->where('classify', rq('classify'))
                 ->limit($limit)
                 ->skip($skip)
                 ->get(['id', 'title', 'content', 'created_at']);
@@ -187,7 +185,7 @@ class article extends Model
                 $item->tag = array_column($tag->toArray(), 'tag');
             }    
             
-            return suc(['sort' => rq('sort'), 'data' => $articles]);
+            return suc(['classify' => rq('classify'), 'data' => $articles]);
         }
         
         if (rq('all'))
@@ -219,6 +217,16 @@ class article extends Model
 
         return suc(['data' => $list, 'total' => $total]);
     }        
+
+    // 查看所有分类
+    public function classify() {
+        $classifys =  $this
+            ->groupBy('classify')
+            ->pluck('classify');
+
+        return suc(['data' => $classifys]); 
+    }
+
 
     // 点赞文章
     public function like() {
