@@ -77,7 +77,13 @@ class comment extends Model
     public function read() {
         // 查找单个文章的评论
         if (rq('article_id')) {
-            $comments = $this->where('article_id', rq('article_id'))->get();
+            $comments = $this
+                ->with(['user'=>function($query){
+                    $query->select('id','username');
+                 }])
+                ->where('article_id', rq('article_id'))
+                // ->orderBy('created_at', 'decs')
+                ->get();
             if (!$comments->first())
                 return err('该文章没有评论');
             return suc(['data' => $comments]);
@@ -85,7 +91,10 @@ class comment extends Model
 
         // 查找单个用户的评论
         if (rq('user_id')) {
-            $comments = $this->where('user_id', rq('user_id'))->get();
+            $comments = $this
+                ->with('user')
+                ->where('user_id', rq('user_id'))
+                ->get();
             if (!$comments->first())
                 return err('该用户还没有评论');
             return suc(['data' => $comments]);

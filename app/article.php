@@ -160,6 +160,7 @@ class article extends Model
             // 获取文章标签
             $tag = tag_ins()->where('article_id', rq('id'))->get(['tag']);
             $article->tag = array_column($tag->toArray(), 'tag');
+            // $article->comment = comment_ins()
 
             return suc(['data' => $article]);
         }
