@@ -7,6 +7,7 @@ $factory->define(App\link::class, function (Faker $faker) {
     return [
         'title' => $faker->name,
         'href' => $faker->url,
+        'desc' => $faker->sentence,
         'end_time' => $faker->date($format = 'Y-m-d'), 
     ];
 });

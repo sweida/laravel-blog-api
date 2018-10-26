@@ -50,9 +50,6 @@ class Usertable extends Model
 
     public function reads($id){
         $user = $this->find($id);
-        // return suc(['data' => $user]); 
-        // return suc(['data' => $id]);
-        // return response()->json($user);
         return response()->json($user);
     }
 

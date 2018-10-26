@@ -12,6 +12,6 @@ class commentSeeder extends Seeder
     public function run()
     {
         // 生成评论
-        factory(App\comment::class, 20)->create();
+        factory(App\comment::class, 30)->create();
     }
 }

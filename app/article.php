@@ -160,7 +160,7 @@ class article extends Model
             // 获取文章标签
             $tag = tag_ins()->where('article_id', rq('id'))->get(['tag']);
             $article->tag = array_column($tag->toArray(), 'tag');
-            // $article->comment = comment_ins()
+            $article->comment = comment_ins()->where('article_id', rq('id'))->count();
 
             return suc(['data' => $article]);
         }
@@ -172,21 +172,23 @@ class article extends Model
         // 按分类获取文章
         if (rq('classify'))
         {
-            $articles = $this
+            $list = $this
                 ->orderBy('created_at')
                 ->where('classify', rq('classify'))
                 ->limit($limit)
                 ->skip($skip)
-                ->get(['id', 'title', 'content', 'created_at']);
-            if (!$articles)
+                ->get(['id', 'title', 'content', 'created_at', 'classify']);
+            if (!$list)
                 return err('该分类没有文章');
 
-            foreach($articles as $item){
+            foreach($list as $item){
                 $tag = tag_ins()->where('article_id', $item->id)->get(['tag']);
                 $item->tag = array_column($tag->toArray(), 'tag');
+                // 评论总数
+                $item->commentCount = comment_ins()->where('article_id', $item->id)->count();
             }    
             
-            return suc(['classify' => rq('classify'), 'data' => $articles]);
+            return suc(['classify' => rq('classify'), 'data' => $list]);
         }
         
         if (rq('all'))
@@ -209,11 +211,11 @@ class article extends Model
                 ->skip($skip)
                 ->get(['id', 'title', 'content', 'classify', 'created_at', 'deleted_at', 'clicks', 'like']);
         }
-
         // 拿回文章的标签
         foreach($list as $item){
             $tag = tag_ins()->where('article_id', $item->id)->get(['tag']);
             $item->tag = array_column($tag->toArray(), 'tag');
+            $item->commentCount = comment_ins()->where('article_id', $item->id)->count();
         }  
 
         return suc(['data' => $list, 'total' => $total]);

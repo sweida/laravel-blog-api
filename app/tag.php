@@ -35,6 +35,10 @@ class tag extends Model
             if (!$articles->first())
                 return err('该标签找不到文章');
 
+            foreach($articles as $item){
+                $tag = $this->where('article_id', $item->article_id)->get(['tag']);
+                $item->article->tag = array_column($tag->toArray(), 'tag');
+            } 
             return suc(['tag' => rq('tag'), 'data' => $articles]);
         }
 

@@ -22,6 +22,10 @@ class Link extends Model
             $this->end_time = rq('end_time');
         }
 
+        if (rq('desc')){
+            $this->desc = rq('desc');
+        }
+
         return $this->save() ?
             suc(['msg' => '添加成功']) :
             err('db insert failed');
@@ -40,6 +44,9 @@ class Link extends Model
         if (rq('title'))
             $link->title = rq('title');
 
+        if (rq('desc')){
+            $link->desc = rq('desc');
+        }
         if (rq('href'))
             $link->href = rq('href');
 

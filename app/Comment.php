@@ -82,7 +82,7 @@ class comment extends Model
                     $query->select('id','username');
                  }])
                 ->where('article_id', rq('article_id'))
-                // ->orderBy('created_at', 'decs')
+                ->orderBy('created_at', 'decs')
                 ->get();
             if (!$comments->first())
                 return err('该文章没有评论');

@@ -8,6 +8,8 @@ $factory->define(App\article::class, function (Faker $faker) {
     return [
         'title' => $faker->sentence,
         'content' => $faker->text,
+        'desc' => $faker->sentence,
+        'img' => $faker->url,
         'classify' => $faker->randomElement($array = array ('前端', '后端', '工具', '随写')),
     ];
 });

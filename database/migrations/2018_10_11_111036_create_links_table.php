@@ -17,6 +17,7 @@ class CreateLinksTable extends Migration
             $table->increments('id');
             $table->string('title');
             $table->string('href');
+            $table->string('desc')->nullable();
             $table->date('start_time')->nullable();
             $table->date('end_time')->nullable();
             $table->softDeletes();

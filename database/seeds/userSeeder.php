@@ -12,7 +12,7 @@ class userSeeder extends Seeder
     public function run()
     {
         // 生成10个用户
-        factory(App\Usertable::class, 10)->create();
+        factory(App\Usertable::class, 15)->create();
         $user = App\Usertable::find(1);
         $user->username = '佟丽娅';
         $user->email = '123@qq.com';
