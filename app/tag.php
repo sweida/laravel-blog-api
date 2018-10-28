@@ -38,6 +38,7 @@ class tag extends Model
             foreach($articles as $item){
                 $tag = $this->where('article_id', $item->article_id)->get(['tag']);
                 $item->article->tag = array_column($tag->toArray(), 'tag');
+                $item->article->commentCount = comment_ins()->where('article_id', $item->article_id)->count();
             } 
             return suc(['tag' => rq('tag'), 'data' => $articles]);
         }

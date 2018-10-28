@@ -257,22 +257,30 @@ class article extends Model
                 ->whereMonth('created_at', rq('month'))
                 ->get();
             if (!$articles->first())
-                return err('该月份没有文章');
-            return suc(['data' => $articles]);
-        }
-        
-        // 按年查询
-        if (rq('year')) 
-        {
-            $articles = $this
-                ->whereYear('created_at', rq('year'))
-                ->get();
-
-            if (!$articles->first()){
-                return err('该年份没有文章');
+                return err('该月份没有文章'); 
+            
+            foreach($articles as $item) {
+                // 标签
+                $tag = tag_ins()->where('article_id', $item->id)->get(['tag']);
+                $item->tag = array_column($tag->toArray(), 'tag');
+                // 获取评论总数
+                $item->commentCount = comment_ins()->where('article_id', $item->id)->count();
             }
             return suc(['data' => $articles]);
         }
+        
+        // // 按年查询
+        // if (rq('year')) 
+        // {
+        //     $articles = $this
+        //         ->whereYear('created_at', rq('year'))
+        //         ->get();
+
+        //     if (!$articles->first()){
+        //         return err('该年份没有文章');
+        //     }
+        //     return suc(['data' => $articles]);
+        // }
 
         // 获取时间线，获取每个月份的文章数量
         $timeline =  $this

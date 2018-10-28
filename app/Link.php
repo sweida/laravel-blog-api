@@ -77,13 +77,13 @@ class Link extends Model
         if (rq('all')) {
             $links = $this
                 ->orderBy('created_at')
-                ->get(['id', 'title', 'href', 'end_time']);
+                ->get(['id', 'title', 'href', 'desc', 'end_time']);
         } else {
             $links = $this
                 ->orderBy('created_at')
                 ->whereDate('end_time', '>=', date('Y-m-d',time()))
                 ->orwhere('end_time', null)
-                ->get(['id', 'title', 'href']);
+                ->get(['id', 'title', 'href', 'desc']);
         }
 
         return $links ?

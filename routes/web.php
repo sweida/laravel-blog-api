@@ -225,9 +225,10 @@ Route::group(['prefix' => 'api/link', 'middleware' => ['adminRole']], function (
         return link_ins()->remove();
     });
 
-    Route::any('read', function() {
-        return link_ins()->read();
-    });
+
+});
+Route::any('api/link/read', function() {
+    return link_ins()->read();
 });
 
 // 留言
