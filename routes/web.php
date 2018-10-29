@@ -16,7 +16,7 @@ function rq($key=null, $default=null){
 }
 
 function err($msg=null){
-    return ['statu' => 0, 'msg' => $msg];
+    return ['status' => 0, 'msg' => $msg];
 }
 
 function suc($data_to_merge=null){

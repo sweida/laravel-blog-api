@@ -14,6 +14,7 @@ class Usertable extends Model
         $username = rq('username');
         $password = rq('password');
         $phone = rq('phone');
+        $email = rq('email');
         // // 检查用户名/密码是否为空，
         if (!($username && $password))
             return err('用户名和密码不能为空');
@@ -24,9 +25,18 @@ class Usertable extends Model
             return err('用户名已存在');
 
         // 检查手机号是否存在
-        $phone_exists = $this->where('phone', $phone)->exists();
-        if ($phone_exists)
-            return err('手机号已存在');      
+        if (rq('phone')) {
+            $phone_exists = $this->where('phone', $phone)->exists();
+            if ($phone_exists)
+                return err('手机号已存在'); 
+        }
+     
+        // 检查邮箱是否存在
+        if (rq('email')) {
+            $email_exists = $this->where('email', $email)->exists();
+            if ($email_exists)
+                return err('邮箱已存在'); 
+        }
 
         // 加密密码
         // $hashed_password = Hash::make($password);
@@ -38,6 +48,7 @@ class Usertable extends Model
         $this->username = $username;
         $this->password = Hash::make($password);
         $this->phone = $phone;
+        $this->email = $email;
         if ($this->save())
             return suc(['id' => $this->id, 'msg' => '注册成功']);
         else
@@ -164,7 +175,7 @@ class Usertable extends Model
     public function is_login() 
     {
         // dd(session()->all());
-        return session('user_id') ? ['登录id'=> session('user_id')] : false;
+        return session('user_id') ? ['登录id'=> session('user_id'), 'username' => session('username')] : false;
     }
 
     // 用旧密码修改密码
