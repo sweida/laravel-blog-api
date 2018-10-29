@@ -178,6 +178,16 @@ class Usertable extends Model
         return session('user_id') ? ['登录id'=> session('user_id'), 'username' => session('username')] : false;
     }
 
+    // 是否登录
+    public function login_Status() 
+    {
+        $user = session()->all();
+        return session('user_id') ? 
+            // response()->json($user) :
+            ['登录id'=> session('user_id'), 'username' => session('username')] :
+            ['status' => 2, 'msg' => '您还没登录'];
+    }
+
     // 用旧密码修改密码
     public function change_password()
     {

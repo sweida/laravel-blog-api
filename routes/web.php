@@ -100,6 +100,10 @@ Route::any('api/is_login', function() {
     return user_ins()->is_login();
 });
 
+Route::any('api/login_Status', function() {
+    return user_ins()->login_Status();
+});
+
 Route::any('api/user/read', function() {
     return (new App\Usertable)->read();
 });
