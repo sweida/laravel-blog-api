@@ -241,6 +241,10 @@ Route::group(['prefix' => 'api/message'], function () {
         return message_ins()->add();
     });
 
+    Route::any('reply', function() {
+        return message_ins()->reply();
+    });
+
     Route::any('read', function() {
         return message_ins()->read();
     });

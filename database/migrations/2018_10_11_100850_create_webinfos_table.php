@@ -18,6 +18,7 @@ class CreateWebinfosTable extends Migration
             $table->string('title')->nullable();
             $table->string('keyword')->nullable();
             $table->text('description')->nullable();
+            $table->date('startTime')->nullable();
             $table->string('icp')->nullable();
             $table->string('weixin')->nullable();
             $table->string('zhifubao')->nullable();

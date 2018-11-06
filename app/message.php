@@ -27,6 +27,31 @@ class message extends Model
             err('保存失败');
     }
 
+    // 回复留言
+    public function reply() {
+        if (!rq('content') || !rq('reply_id'))
+            return err('回复内容和id不能为空！');
+
+        $hasReply = $this->find(rq('reply_id'));
+        if (!$hasReply) 
+            return err('id不存在！');
+
+        $this->content = rq('content');
+        $this->reply_id = rq('reply_id');
+
+        // 如果有登录则显示登录用户；没有登陆的，如果有填用户名则显示用户名
+        if (user_ins()->is_login()) {
+            $this->user_id = session('user_id');
+        } else {
+            $this->ykname = rq('ykname');
+        }
+
+        // 保存
+        return $this->save() ? 
+            suc(['id' => $this->id, 'msg' => '回复留言成功']) :
+            err('保存失败');
+    }
+
     //删除留言，只有登录的才能删除
     public function remove() {
         if (rq('id')) {
@@ -113,6 +138,12 @@ class message extends Model
             ->limit($limit)
             ->skip($skip)
             ->get();
+        
+        // 如果是回复的，找出回复的原文
+        foreach($messages as $item) {
+            $repc = $this->find($item->reply_id);
+            $item->replyContent = $repc['content'];
+        }
 
         return $messages ?
             suc(['data' => $messages, 'total' => $total]) :

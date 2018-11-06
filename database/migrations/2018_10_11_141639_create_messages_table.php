@@ -17,6 +17,7 @@ class CreateMessagesTable extends Migration
             $table->increments('id');
             $table->text('content');
             $table->string('ykname')->nullable();
+            $table->string('reply_id')->nullable();
             $table->unsignedInteger('user_id')->nullable();
             $table->timestamps();
 
