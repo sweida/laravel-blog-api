@@ -177,7 +177,7 @@ class article extends Model
                 ->where('classify', rq('classify'))
                 ->limit($limit)
                 ->skip($skip)
-                ->get(['id', 'title', 'content', 'created_at', 'classify']);
+                ->get(['id', 'title', 'content', 'clicks', 'created_at', 'classify']);
             if (!$list)
                 return err('该分类没有文章');
 
