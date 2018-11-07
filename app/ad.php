@@ -72,8 +72,6 @@ class ad extends Model
             ->orderBy('created_at')
             ->get();
 
-        return $ads->first() ?
-            suc(['data' => $ads]) :
-            err('db get failed');    
+        return suc(['data' => $ads]);    
     }
 }

@@ -23,6 +23,9 @@ class Webinfo extends Model
         if (rq('description'))
             $webinfo->description = rq('description');
 
+        if (rq('startTime'))
+            $webinfo->startTime = rq('startTime');
+
         if (rq('icp'))
             $webinfo->icp = rq('icp');
 
