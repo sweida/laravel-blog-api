@@ -54,6 +54,10 @@ class message extends Model
 
     //删除留言，只有登录的才能删除
     public function remove() {
+        // 如果不是管理员
+        if (!user_ins()->is_login())
+            return err('还未登录');
+            
         if (rq('id')) {
             $message = $this->find(rq('id'));
             if (!$message) 
@@ -68,7 +72,7 @@ class message extends Model
                 suc(['msg' => '删除成功！']) :
                 err('找不到需要删除的id');
         }
-        // 如果不是管理员
+
         $user = user_ins()->find(session('user_id'));
         if ($user->is_admin != 1) {
             if (!$message->user_id)
