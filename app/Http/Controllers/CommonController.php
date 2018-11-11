@@ -4,36 +4,37 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Mail;
 
 class CommonController extends Controller
 {
-    public function timeline()
-    {
-        // 每页多少条
-        $limit = rq('limit') ?: 10;
-        // 页码，从第limit条开始
-        $skip = (rq('page') ? rq('page')-1 : 0) * $limit;
+    // public function timeline()
+    // {
+    //     // 每页多少条
+    //     $limit = rq('limit') ?: 10;
+    //     // 页码，从第limit条开始
+    //     $skip = (rq('page') ? rq('page')-1 : 0) * $limit;
 
-        $questions = question_ins()
-            ->limit($limit)
-            ->skip($skip)
-            ->orderBy('created_at', 'desc')
-            ->get();
+    //     $questions = question_ins()
+    //         ->limit($limit)
+    //         ->skip($skip)
+    //         ->orderBy('created_at', 'desc')
+    //         ->get();
 
-        $answers = answer_ins()
-            ->limit($limit)
-            ->skip($skip)
-            ->orderBy('created_at', 'desc')
-            ->get();
+    //     $answers = answer_ins()
+    //         ->limit($limit)
+    //         ->skip($skip)
+    //         ->orderBy('created_at', 'desc')
+    //         ->get();
 
-        // dd($question->toArray(), $answer->toArray());
-        $data = $questions->merge($answers);
-        $data = $data->sortByDesc(function ($item) {
-            return $item->created_at;
-        });
-        $data = $data -> values()->all();
-        return suc(['data' => $data]);
-    }
+    //     // dd($question->toArray(), $answer->toArray());
+    //     $data = $questions->merge($answers);
+    //     $data = $data->sortByDesc(function ($item) {
+    //         return $item->created_at;
+    //     });
+    //     $data = $data -> values()->all();
+    //     return suc(['data' => $data]);
+    // }
 
 
     // public function img_upload(Request $request){
@@ -102,4 +103,17 @@ class CommonController extends Controller
             suc(['msg' => '删除成功']):
             err('删除失败');
     }
+
+    // 发送邮件
+    public function mail() {
+        // return '222';
+        Mail::raw('邮件内容', function($message) {
+            $message->from('weidaxyy@163.com', '放羊的猩猩的博客');
+            $message->subject('邮件主题 测试');
+            $message->to('849222104@qq.com');
+        });
+
+
+    }
+
 }

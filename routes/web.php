@@ -302,3 +302,5 @@ Route::group(['prefix' => 'api/comment'], function () {
 Route::any('api/img/upload', 'CommonController@img_upload');
 // 删除文件
 Route::any('api/img/delete', 'CommonController@delete_upload');
+// 发送邮件
+Route::any('api/user/mail', 'CommonController@mail');
