@@ -29,7 +29,7 @@ return [
     |
     */
     // 过期时间，单位是分钟
-    'lifetime' => env('SESSION_LIFETIME', 0),
+    'lifetime' => env('SESSION_LIFETIME', 43200),
 
     // 关闭浏览器时session是否消失，默认是false不消失，改为true就消失了
     'expire_on_close' => false,

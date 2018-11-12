@@ -106,14 +106,25 @@ class CommonController extends Controller
 
     // 发送邮件
     public function mail() {
-        // return '222';
-        Mail::raw('邮件内容', function($message) {
-            $message->from('weidaxyy@163.com', '放羊的猩猩的博客');
-            $message->subject('邮件主题 测试');
-            $message->to('849222104@qq.com');
-        });
+        if (!rq('email'))
+            return err('email is requesed');
+        
+        $user = user_ins()->where('email', rq('email'))->first();
 
+        if (!$user)
+            return err('该邮箱没有注册账号');
+        else
+            return suc(['data' => $user]);
+        // $send = Mail::raw('找回密码', function($message) {
+        //     $message->from('weidaxyy@163.com', '放羊的猩猩的博客');
+        //     $message->subject('验证码是' + $user->phone_captcha + '，三分钟内有效');
+        //     $message->to(rq('email'));
+        // });
 
+        // if ($send)
+        //     return suc(['msg' => '邮件已经发送，请注意查看']);
+        // else 
+        //     return err('邮件发送失败，请稍后在操作');
     }
 
 }

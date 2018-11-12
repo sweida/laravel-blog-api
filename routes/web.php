@@ -122,6 +122,15 @@ Route::any('api/user/validata_captcha', function() {
     return user_ins()->validata_captcha();
 });
 
+// 发送邮件
+Route::any('api/user/mail', function() {
+    return user_ins()->mail();
+});
+
+// 邮件修改密码
+Route::any('api/user/email_valid', function() {
+    return user_ins()->email_valid();
+});
 // // 提问
 // Route::any('api/question/add', function() {
 //     return question_ins()->add();
@@ -302,5 +311,3 @@ Route::group(['prefix' => 'api/comment'], function () {
 Route::any('api/img/upload', 'CommonController@img_upload');
 // 删除文件
 Route::any('api/img/delete', 'CommonController@delete_upload');
-// 发送邮件
-Route::any('api/user/mail', 'CommonController@mail');

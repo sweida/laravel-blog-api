@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Request;
 use Hash;
+use Mail;
 
 class Usertable extends Model
 {
@@ -184,7 +185,7 @@ class Usertable extends Model
         $user = session()->all();
         return session('user_id') ? 
             // response()->json($user) :
-            ['登录id'=> session('user_id'), 'username' => session('username')] :
+            suc(['id'=> session('user_id'), 'username' => session('username')]) :
             ['status' => 2, 'msg' => '您还没登录'];
     }
 
@@ -256,16 +257,67 @@ class Usertable extends Model
         }
     }   
     
+    // 发送邮件
+    public function mail()
+    {
+        // 限制多少秒发送一次短信
+        if ($this->is_robot(10))
+            return err('操作太频繁');
+
+        if (!rq('email'))
+            return err('email is required');
+
+        $user = $this->where('email', rq('email'))->first();
+
+        if (!$user)
+            return err('该邮箱地址没有注册账号');
+
+        // 时间限制，一段时间后重置次数 300秒
+        $longTime = time() - strtotime($user->updated_at);
+        if ($longTime > 1800)
+            session()->put('captcha_count', 1);
+        // 每次发送短信+1
+        $captcha_count = session('captcha_count');
+        session()->put('captcha_count', $captcha_count+1);
+        // 限制5条短信
+        if (session('captcha_count') > 6)
+            return err('发送邮件太频繁，30分钟后再操作');
+        
+        // 生成验证码
+        $captcha = $this->generate_captcha();
+        $user->phone_captcha = $captcha;
+
+        if ($user->save()) {
+            // 如果验证码保存成功，发送验证码短信
+            $this->send_email(rq('email'), $captcha);
+            // 保存上一次操作时间
+            $this->update_robot_time();
+            return suc(['msg' => '邮件验证码已经发送']);
+        } else {
+            return err('验证码发送失败，请稍后再试');
+        }
+    }   
+
+
     // 发送短信
     public function send_sms()
     {
         return true;
     }
 
-    // 用验证验修改密码
+    // 发送邮件验证码
+    public function send_email($email, $captcha)
+    {
+        Mail::raw('验证码是'.$captcha.'，五分钟内有效', function($message) use($email) {
+            $message->subject('重置密码');
+            $message->to($email);
+        });
+    }
+
+    // 用手机验证码修改密码
     public function validata_captcha()
     {
-        if ($this->is_robot(2))
+        if ($this->is_robot())
             return err('操作太频繁');
 
         if (!rq('phone') || !rq('phone_captcha') || !rq('new_password'))
@@ -283,7 +335,42 @@ class Usertable extends Model
         // 短信过期验证
         $longTime = time() - strtotime($user->updated_at);
         if ($longTime > 180)
-            return err('短信已经过期');
+            return err('验证码已经过期');
+
+        // 验证成功，加密新密码，清空验证码
+        $user->password = Hash::make(rq('new_password'));
+        $user->phone_captcha = null;
+        
+        $this->update_robot_time();
+        
+        return $user->save() ?
+            suc(['msg' => '密码修改成功']) :
+            err('db update failed');
+    }
+
+
+    // 用邮件验证码修改密码
+    public function email_valid()
+    {
+        if ($this->is_robot())
+            return err('操作太频繁');
+
+        if (!rq('email') || !rq('phone_captcha') || !rq('new_password'))
+            return err('请输入邮箱地址和验证码和新密码');
+        
+        // 检查用户是否存在
+        $user = $this->where([
+            'email'=> rq('email'),
+            'phone_captcha'=> rq('phone_captcha')
+        ])->first();
+
+        if (!$user)
+            return err('验证码错误或者邮箱不对');
+        
+        // 验证码过期验证
+        $longTime = time() - strtotime($user->updated_at);
+        if ($longTime > 300)
+            return err('验证码已经过期');
 
         // 验证成功，加密新密码，清空验证码
         $user->password = Hash::make(rq('new_password'));

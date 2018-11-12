@@ -22,7 +22,7 @@ class userSeeder extends Seeder
 
         $user2 = user_ins()->find(2);
         $user2->username = '周杰伦';
-        $user2->email = 'jay@163.com';
+        $user2->email = '849222104@qq.com';
         $user2->save();
     }
 }
