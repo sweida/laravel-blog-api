@@ -92,8 +92,14 @@ class comment extends Model
         // 查找单个用户的评论
         if (rq('user_id')) {
             $comments = $this
-                ->with('user')
+                ->with(['user'=>function($query){
+                    $query->select('id','username');
+                }])
+                ->with(['article'=>function($query){
+                    $query->select('id', 'title');
+                }])
                 ->where('user_id', rq('user_id'))
+                ->orderBy('created_at', 'decs')
                 ->get();
             if (!$comments->first())
                 return err('该用户还没有评论');

@@ -121,6 +121,7 @@ class message extends Model
                 return err('没有该用户');
             $messages = $this
                 ->where('user_id', rq('user_id'))
+                ->orderBy('created_at', 'decs')
                 ->get();
             if (!$messages->first())
                 return err('该用户没有留言');    
