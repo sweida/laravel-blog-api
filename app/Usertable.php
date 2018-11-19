@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Request;
 use Hash;
 use Mail;
+use Symfony\Component\HttpFoundation\Response;
 
 class Usertable extends Model
 {
@@ -142,19 +143,27 @@ class Usertable extends Model
         $hashed_password = $user->password;
         if (!Hash::check($password, $hashed_password))
             return err('密码有误');
-        
         // 写入session
+        session()->forget('is_admin');
         session()->put('username', $user->username);
         session()->put('user_id', $user->id);
         
+        // 如果是管理员
+        if ($user->is_admin)
+            session()->put('is_admin', $user->is_admin);
+            
+        // return ['ddddd' => $is_admin];
         // 最后一次登录时间
         // $user->last_login = date('Y-m-d h:i:s',time());
         $user->updated_at = time();
         // dd(session()->all());
 
-        return $user->save() ?
-            suc(['msg' => '登录成功', 'token' => session('_token'), 'user_id' => $user->id]) : 
-            err('服务器有问题，请稍后在登录');
+        if ($user->save() && session('is_admin'))
+            return suc(['msg' => '登录成功', 'token' => session('_token'), 'user_id' => $user->id, 'is_admin' => session('is_admin')]);
+        else if ($user->save())
+            return suc(['msg' => '登录成功', 'token' => session('_token'), 'user_id' => $user->id]);
+        else
+            return err('服务器有问题，请稍后在登录');
     }
 
     // 登出
@@ -166,6 +175,7 @@ class Usertable extends Model
         // 清除用户名和id
         session()->forget('username');
         session()->forget('user_id');
+        session()->forget('is_admin');
         // session()->put('username', null);
         // session()->put('user_id', null);
         // session()->all();
@@ -182,20 +192,17 @@ class Usertable extends Model
     // 是否登录
     public function login_Status() 
     {
-        $user = session()->all();
-        return session('user_id') ? 
-            // response()->json($user) :
-            suc(['id'=> session('user_id'), 'username' => session('username')]) :
-            ['status' => 2, 'msg' => '您还没登录'];
+        if (session('is_admin')) 
+            return suc(['id'=> session('user_id'), 'username' => session('username'), 'is_admin' => session('is_admin')]);
+        else if(session('user_id'))
+            return suc(['id'=> session('user_id'), 'username' => session('username')]);
+        else
+            return ['status' => 2, 'msg' => '你还没有登录'];
     }
 
     // 用旧密码修改密码
     public function change_password()
     {
-        // 检查用户是否登陆
-        if (!user_ins()->is_login())
-            return err('还未登录');
-
         if (!rq('old_password') || !rq('new_password'))
             return err('新密码和旧密码不能为空');
 
@@ -240,7 +247,7 @@ class Usertable extends Model
         session()->put('captcha_count', $captcha_count+1);
         // 限制5条短信
         if (session('captcha_count') > 6)
-            return err('发送短信太频繁，5分钟后再操作');
+            return err('发送短信太频繁，30分钟后再操作');
         
         // 生成验证码
         $captcha = $this->generate_captcha();

@@ -26,21 +26,9 @@ function suc($data_to_merge=null){
     return $data;
 }
 
-// function paginate($page=1, $limit=12){
-//     $skip = 
-// }
-
 function user_ins(){
     return new App\Usertable;
 }
-
-// function question_ins(){
-//     return new App\Question;
-// }
-
-// function answer_ins(){
-//     return new App\Answer;
-// }
 
 function article_ins(){
     return new App\article;
@@ -110,7 +98,7 @@ Route::any('api/user/read', function() {
 // 修改密码
 Route::any('api/user/change_password', function() {
     return user_ins()->change_password();
-});
+})->middleware('LoginRole');
 
 // 发送短信
 Route::any('api/user/reset_password', function() {
@@ -237,8 +225,6 @@ Route::group(['prefix' => 'api/link', 'middleware' => ['adminRole']], function (
     Route::any('remove', function() {
         return link_ins()->remove();
     });
-
-
 });
 Route::any('api/link/read', function() {
     return link_ins()->read();
@@ -282,11 +268,10 @@ Route::group(['prefix' => 'api/ad', 'middleware' => ['adminRole']], function () 
         return ad_ins()->remove();
     });
 
-    Route::any('read', function() {
-        return ad_ins()->read();
-    });
 });
-
+Route::any('api/ad/read', function() {
+    return ad_ins()->read();
+});
 
 // 评论文章
 Route::group(['prefix' => 'api/comment'], function () {

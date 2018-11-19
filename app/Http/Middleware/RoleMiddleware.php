@@ -18,7 +18,7 @@ class RoleMiddleware
         if(rq('username')){
             $user = user_ins()->where('username', rq('username'))->first();
             if ($user->is_admin != 1)
-                return response()->json(err('您不是管理员，不能登录'));
+                return response()->json(['status' => 2, 'msg' => '你不是管理员，不能登录']);
         }
         return $next($request);
     }

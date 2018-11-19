@@ -14,14 +14,14 @@ class userSeeder extends Seeder
         // 生成10个用户
         factory(App\Usertable::class, 15)->create();
         $user = App\Usertable::find(1);
-        $user->username = '佟丽娅';
-        $user->email = '123@qq.com';
+        $user->username = '九歌';
+        $user->email = 'sweidaxyy@163.com';
         $user->password = bcrypt('123456');
         $user->is_admin = 1;
         $user->save();
 
         $user2 = user_ins()->find(2);
-        $user2->username = '周杰伦';
+        $user2->username = '佟丽娅';
         $user2->email = '849222104@qq.com';
         $user2->save();
     }

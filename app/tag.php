@@ -55,5 +55,6 @@ class tag extends Model
         return $this->belongsTo('App\article');
     }
 
+    // 数据填充时会生成时间字段，设置false禁止操作该字段
     public $timestamps = false;
 }
