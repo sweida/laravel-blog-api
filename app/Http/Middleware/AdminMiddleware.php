@@ -17,12 +17,12 @@ class AdminMiddleware
     {
         // 检查是否登录
         if (!user_ins()->is_login())
-            return response()->json(['status' => 2, 'msg' => '你还没有登录']);
+            return response()->json(['status' => 401, 'msg' => '你还没有登录']);
         
         // 检查是否管理员
         $user = user_ins()->find(session('user_id'));
         if ($user['is_admin'] != 1)
-            return response()->json(['status' => 2, 'msg' => '你不是管理员，没有权限']);
+            return response()->json(['status' => 401, 'msg' => '你不是管理员，没有权限']);
 
         return $next($request);
     }
