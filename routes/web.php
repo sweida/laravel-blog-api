@@ -296,3 +296,9 @@ Route::group(['prefix' => 'api/comment'], function () {
 Route::any('api/img/upload', 'CommonController@img_upload');
 // 删除文件
 Route::any('api/img/delete', 'CommonController@delete_upload');
+
+
+// 博客banner上传图片
+Route::any('api/img/blogbanner', 'CommonController@blog_banner');
+// 博客上传图片
+Route::any('api/img/blogdetail', 'CommonController@fileUpload');

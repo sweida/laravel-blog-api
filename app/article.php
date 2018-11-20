@@ -20,6 +20,7 @@ class article extends Model
         $this->title = rq('title');
         $this->content = rq('content');
         $this->classify = rq('classify');
+        $this->img = rq('img');
             
         $aritcle = $this->save();
 
@@ -57,6 +58,8 @@ class article extends Model
 
         if (rq('title'))
             $article->title = rq('title');
+        if (rq('img'))
+            $article->img = rq('img');
         if (rq('content'))
             $article->content = rq('content');
         if (rq('classify'))
@@ -173,11 +176,11 @@ class article extends Model
         if (rq('classify'))
         {
             $list = $this
-                ->orderBy('created_at')
+                ->orderBy('created_at', 'desc')
                 ->where('classify', rq('classify'))
                 ->limit($limit)
                 ->skip($skip)
-                ->get(['id', 'title', 'content', 'clicks', 'created_at', 'classify']);
+                ->get(['id', 'title', 'img', 'clicks', 'created_at', 'classify']);
             if (!$list)
                 return err('该分类没有文章');
 
@@ -201,7 +204,7 @@ class article extends Model
                 ->orderBy('created_at', 'desc')
                 ->limit($limit)
                 ->skip($skip)
-                ->get(['id', 'title', 'content', 'classify', 'created_at', 'deleted_at', 'clicks', 'like']);
+                ->get(['id', 'title', 'img', 'classify', 'created_at', 'clicks', 'like']);
         } else {
             $total = $this->count();
             // 查看所有文章
@@ -209,7 +212,7 @@ class article extends Model
                 ->orderBy('created_at', 'desc')
                 ->limit($limit)
                 ->skip($skip)
-                ->get(['id', 'title', 'content', 'classify', 'created_at', 'deleted_at', 'clicks', 'like']);
+                ->get(['id', 'title', 'img', 'classify', 'created_at', 'clicks', 'like']);
         }
         // 拿回文章的标签
         foreach($list as $item){
@@ -253,9 +256,10 @@ class article extends Model
         if (rq('year') && rq('month')) 
         {
             $articles = $this
+                ->orderBy('created_at', 'desc')
                 ->whereYear('created_at', rq('year'))
                 ->whereMonth('created_at', rq('month'))
-                ->get();
+                ->get(['id', 'title', 'img', 'classify', 'created_at', 'clicks', 'like']);
             if (!$articles->first())
                 return err('该月份没有文章'); 
             

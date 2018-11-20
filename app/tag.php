@@ -25,7 +25,11 @@ class tag extends Model
         {
             // 查找指定id是否存在 (拿到文章详情)
             $articles = $this
-                ->with('article')
+                // ->with('article')
+                // ->orderBy('created_at', 'desc')
+                ->with(['article'=>function($query){
+                    $query->orderBy('created_at', 'desc')->select('id', 'title', 'img', 'clicks', 'created_at', 'classify');
+                 }])
                 ->where('tag', rq('tag'))
                 ->get(['article_id']);
         
@@ -35,6 +39,7 @@ class tag extends Model
             if (!$articles->first())
                 return err('该标签找不到文章');
 
+            // 拿回每篇文章的所有标签和评论总数
             foreach($articles as $item){
                 $tag = $this->where('article_id', $item->article_id)->get(['tag']);
                 $item->article->tag = array_column($tag->toArray(), 'tag');
