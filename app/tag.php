@@ -25,10 +25,9 @@ class tag extends Model
         {
             // 查找指定id是否存在 (拿到文章详情)
             $articles = $this
-                // ->with('article')
                 // ->orderBy('created_at', 'desc')
                 ->with(['article'=>function($query){
-                    $query->orderBy('created_at', 'desc')->select('id', 'title', 'img', 'clicks', 'created_at', 'classify');
+                    $query->select('id', 'title', 'img', 'clicks', 'created_at', 'classify');
                  }])
                 ->where('tag', rq('tag'))
                 ->get(['article_id']);
