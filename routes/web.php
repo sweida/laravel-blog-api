@@ -62,104 +62,104 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::any('api', function() {
+Route::any('apis', function() {
     return ['version' => 0.1];
 });
 
 // 登陆注册
-Route::any('api/signup', function() {
+Route::any('apis/signup', function() {
     return user_ins()->signup();
 });
 
-Route::any('api/login', function() {
+Route::any('apis/login', function() {
     return user_ins()->login();
 });
 
 // 后台登录
-Route::any('api/admin/login', function() {
+Route::any('apis/admin/login', function() {
     return user_ins()->login();
 })->middleware('adminlogin');
 
-Route::any('api/logout', function() {
+Route::any('apis/logout', function() {
     return user_ins()->logout();
 });
 
-Route::any('api/is_login', function() {
+Route::any('apis/is_login', function() {
     return user_ins()->is_login();
 });
 
-Route::any('api/login_Status', function() {
+Route::any('apis/login_Status', function() {
     return user_ins()->login_Status();
 });
 
-Route::any('api/user/read', function() {
+Route::any('apis/user/read', function() {
     return (new App\Usertable)->read();
 });
 // 修改密码
-Route::any('api/user/change_password', function() {
+Route::any('apis/user/change_password', function() {
     return user_ins()->change_password();
 })->middleware('LoginRole');
 
 // 发送短信
-Route::any('api/user/reset_password', function() {
+Route::any('apis/user/reset_password', function() {
     return user_ins()->reset_password();
 });
 
 // 短信修改密码
-Route::any('api/user/validata_captcha', function() {
+Route::any('apis/user/validata_captcha', function() {
     return user_ins()->validata_captcha();
 });
 
 // 发送邮件
-Route::any('api/user/mail', function() {
+Route::any('apis/user/mail', function() {
     return user_ins()->mail();
 });
 
 // 邮件修改密码
-Route::any('api/user/email_valid', function() {
+Route::any('apis/user/email_valid', function() {
     return user_ins()->email_valid();
 });
 // // 提问
-// Route::any('api/question/add', function() {
+// Route::any('apis/question/add', function() {
 //     return question_ins()->add();
 // });
 
-// Route::any('api/question/change', function() {
+// Route::any('apis/question/change', function() {
 //     return question_ins()->change();
 // });
 
-// Route::any('api/question/read', function() {
+// Route::any('apis/question/read', function() {
 //     return question_ins()->read();
 // });
 
-// Route::any('api/question/remove', function() {
+// Route::any('apis/question/remove', function() {
 //     return question_ins()->remove();
 // });
 
 // // 回答
-// Route::any('api/answer/add', function() {
+// Route::any('apis/answer/add', function() {
 //     return answer_ins()->add();
 // });
 
-// Route::any('api/answer/change', function() {
+// Route::any('apis/answer/change', function() {
 //     return answer_ins()->change();
 // });
 
-// Route::any('api/answer/read', function() {
+// Route::any('apis/answer/read', function() {
 //     return answer_ins()->read();
 // });
 
-// Route::any('api/answer/vote', function() {
+// Route::any('apis/answer/vote', function() {
 //     return answer_ins()->vote();
 // });
 
-// Route::any('api/timeline', 'CommonController@timeline');
+// Route::any('apis/timeline', 'CommonController@timeline');
 
 
 
 // article
 // 中间件，管理员权限
-Route::group(['prefix' => 'api/article', 'middleware' => ['adminRole']], function () {
+Route::group(['prefix' => 'apis/article', 'middleware' => ['adminRole']], function () {
     Route::any('add', function() {
         return article_ins()->add();
     });
@@ -181,39 +181,39 @@ Route::group(['prefix' => 'api/article', 'middleware' => ['adminRole']], functio
 });
 
 
-Route::any('api/article/like', function() {
+Route::any('apis/article/like', function() {
     return article_ins()->like();
 });
 
-Route::any('api/article/read', function() {
+Route::any('apis/article/read', function() {
     return article_ins()->read();
 });
 
-Route::any('api/article/classify', function() {
+Route::any('apis/article/classify', function() {
     return article_ins()->classify();
 });
 
 // 按月份查询
-Route::any('api/article/times', function() {
+Route::any('apis/article/times', function() {
     return article_ins()->times();
 });
 
 // 标签
-Route::any('api/tag/read', function() {
+Route::any('apis/tag/read', function() {
     return tag_ins()->read();
 });
 
 // 网站信息
-Route::any('api/webinfo/set', function() {
+Route::any('apis/webinfo/set', function() {
     return webinfo_ins()->setting();
 })->middleware('adminRole');
 
-Route::any('api/webinfo/read', function() {
+Route::any('apis/webinfo/read', function() {
     return webinfo_ins()->read();
 });
 
 // 友情连接
-Route::group(['prefix' => 'api/link', 'middleware' => ['adminRole']], function () {
+Route::group(['prefix' => 'apis/link', 'middleware' => ['adminRole']], function () {
     Route::any('add', function() {
         return link_ins()->add();
     });
@@ -226,12 +226,12 @@ Route::group(['prefix' => 'api/link', 'middleware' => ['adminRole']], function (
         return link_ins()->remove();
     });
 });
-Route::any('api/link/read', function() {
+Route::any('apis/link/read', function() {
     return link_ins()->read();
 });
 
 // 留言
-Route::group(['prefix' => 'api/message'], function () {
+Route::group(['prefix' => 'apis/message'], function () {
     Route::any('add', function() {
         return message_ins()->add();
     });
@@ -255,7 +255,7 @@ Route::group(['prefix' => 'api/message'], function () {
 
 
 // 广告
-Route::group(['prefix' => 'api/ad', 'middleware' => ['adminRole']], function () {
+Route::group(['prefix' => 'apis/ad', 'middleware' => ['adminRole']], function () {
     Route::any('add', function() {
         return ad_ins()->add();
     });
@@ -269,12 +269,12 @@ Route::group(['prefix' => 'api/ad', 'middleware' => ['adminRole']], function () 
     });
 
 });
-Route::any('api/ad/read', function() {
+Route::any('apis/ad/read', function() {
     return ad_ins()->read();
 });
 
 // 评论文章
-Route::group(['prefix' => 'api/comment'], function () {
+Route::group(['prefix' => 'apis/comment'], function () {
     Route::any('add', function() {
         return comment_ins()->add();
     });
@@ -293,12 +293,12 @@ Route::group(['prefix' => 'api/comment'], function () {
 });
 
 // 上传图片
-Route::any('api/img/upload', 'CommonController@img_upload');
+Route::any('apis/img/upload', 'CommonController@img_upload');
 // 删除文件
-Route::any('api/img/delete', 'CommonController@delete_upload');
+Route::any('apis/img/delete', 'CommonController@delete_upload');
 
 
 // 博客banner上传图片
-Route::any('api/img/blogbanner', 'CommonController@blog_banner');
+Route::any('apis/img/blogbanner', 'CommonController@blog_banner');
 // 博客上传图片
-Route::any('api/img/blogdetail', 'CommonController@fileUpload');
+Route::any('apis/img/blogdetail', 'CommonController@fileUpload');
