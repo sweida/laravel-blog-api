@@ -30,6 +30,7 @@ class tag extends Model
                     $query->select('id', 'title', 'img', 'clicks', 'created_at', 'classify');
                  }])
                 ->where('tag', rq('tag'))
+                ->orderBy('article_id', 'desc')
                 ->get(['article_id']);
         
             // 返回没有删除的文章
