@@ -75,6 +75,11 @@ class comment extends Model
     }
 
     public function read() {
+        // 分页
+        $total = $this->count();
+        $limit = rq('limit') ?: 10;
+        $skip = (rq('page') ? rq('page')-1 : 0) * $limit;
+
         // 查找单个文章的评论
         if (rq('article_id')) {
             $comments = $this
@@ -82,7 +87,9 @@ class comment extends Model
                     $query->select('id','username');
                  }])
                 ->where('article_id', rq('article_id'))
-                ->orderBy('created_at', 'decs')
+                ->limit($limit)
+                ->skip($skip)
+                ->orderBy('created_at', 'desc')
                 ->get();
             if (!$comments->first())
                 return err('该文章没有评论');
@@ -106,10 +113,7 @@ class comment extends Model
             return suc(['data' => $comments]);
         }
 
-        // 分页
-        $total = $this->count();
-        $limit = rq('limit') ?: 10;
-        $skip = (rq('page') ? rq('page')-1 : 0) * $limit;
+
         // 获取所有评论
         $comments = $this
             ->with(['user'=>function($query){

@@ -22,9 +22,11 @@ class Link extends Model
             $this->end_time = rq('end_time');
         }
 
-        if (rq('desc')){
+        if (rq('img'))
+            $this->img = rq('img');
+
+        if (rq('desc'))
             $this->desc = rq('desc');
-        }
 
         return $this->save() ?
             suc(['msg' => '添加成功']) :
@@ -49,6 +51,9 @@ class Link extends Model
         }
         if (rq('href'))
             $link->href = rq('href');
+
+        if (rq('img'))
+            $link->img = rq('img');
 
         if (rq('end_time'))
             $link->end_time = rq('end_time');
@@ -77,13 +82,13 @@ class Link extends Model
         if (rq('all')) {
             $links = $this
                 ->orderBy('created_at')
-                ->get(['id', 'title', 'href', 'desc', 'end_time']);
+                ->get(['id', 'title', 'href', 'img', 'desc', 'end_time']);
         } else {
             $links = $this
                 ->orderBy('created_at')
                 ->whereDate('end_time', '>=', date('Y-m-d',time()))
                 ->orwhere('end_time', null)
-                ->get(['id', 'title', 'href', 'desc']);
+                ->get(['id', 'title', 'href', 'img', 'desc']);
         }
 
         return $links ?

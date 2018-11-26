@@ -16,5 +16,6 @@ $factory->define(App\webinfo::class, function (Faker $faker) {
         'email' => $faker->email,
         'github' => $faker->url,
         'personinfo' => $faker->text,
+        'startTime' => $faker->date($format = 'Y-m-d'),
     ];
 });
