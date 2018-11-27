@@ -158,8 +158,8 @@ class article extends Model
             if (!$article)
                 return err('article not exists');
             // 浏览量
-            // $article->clicks += 1;
-            // $article->save();
+            $article->clicks += 1;
+            $article->save();
             // 获取文章标签
             $tag = tag_ins()->where('article_id', rq('id'))->get(['tag']);
             $article->tag = array_column($tag->toArray(), 'tag');
