@@ -8,7 +8,10 @@ class tag extends Model
 {
     //查询标签
     public function read() {
-        
+        // 分页
+        $limit = rq('limit') ?: 10;
+        $skip = (rq('page') ? rq('page')-1 : 0) * $limit;
+
         // 查看单个文章的标签
         if (rq('article_id'))
         {
@@ -23,6 +26,7 @@ class tag extends Model
         // 查看标签的所有文章
         if (rq('tag'))
         {
+            $total = $this->where('tag', rq('tag'))->count();
             // 查找指定id是否存在 (拿到文章详情)
             $articles = $this
                 // ->orderBy('created_at', 'desc')
@@ -31,6 +35,8 @@ class tag extends Model
                  }])
                 ->where('tag', rq('tag'))
                 ->orderBy('article_id', 'desc')
+                ->limit($limit)
+                ->skip($skip)
                 ->get(['article_id']);
         
             // 返回没有删除的文章
@@ -45,7 +51,7 @@ class tag extends Model
                 $item->article->tag = array_column($tag->toArray(), 'tag');
                 $item->article->commentCount = comment_ins()->where('article_id', $item->article_id)->count();
             } 
-            return suc(['tag' => rq('tag'), 'data' => $articles]);
+            return suc(['tag' => rq('tag'), 'data' => $articles, 'total' => $total]);
         }
 
         $taglist =  $this

@@ -175,6 +175,7 @@ class article extends Model
         // 按分类获取文章
         if (rq('classify'))
         {
+            $total = $this->where('classify', rq('classify'))->count();
             $list = $this
                 ->orderBy('created_at', 'desc')
                 ->where('classify', rq('classify'))
@@ -191,15 +192,15 @@ class article extends Model
                 $item->commentCount = comment_ins()->where('article_id', $item->id)->count();
             }    
             
-            return suc(['classify' => rq('classify'), 'data' => $list]);
+            return suc(['classify' => rq('classify'), 'data' => $list, 'total' => $total, 'page' => rq('page')]);
         }
         
         if (rq('all'))
         {
+            // 查看所有文章 (包括下架的文章)
             // 总数量
             $total = $this::withTrashed()->count();
 
-            // 查看所有文章 (包括下架的文章)
             $list = $this::withTrashed()
                 ->orderBy('created_at', 'desc')
                 ->limit($limit)
@@ -221,7 +222,7 @@ class article extends Model
             $item->commentCount = comment_ins()->where('article_id', $item->id)->count();
         }  
 
-        return suc(['data' => $list, 'total' => $total]);
+        return suc(['data' => $list, 'total' => $total, 'page' => rq('page')]);
     }        
 
     // 查看所有分类
@@ -252,13 +253,19 @@ class article extends Model
 
     // 按年月查询文章
     public function times() {
+        // 分页
+        $limit = rq('limit') ?: 10;
+        $skip = (rq('page') ? rq('page')-1 : 0) * $limit;
 
         if (rq('year') && rq('month')) 
         {
+            $total = $this->whereYear('created_at', rq('year'))->whereMonth('created_at', rq('month'))->count();
             $articles = $this
                 ->orderBy('created_at', 'desc')
                 ->whereYear('created_at', rq('year'))
                 ->whereMonth('created_at', rq('month'))
+                ->limit($limit)
+                ->skip($skip)
                 ->get(['id', 'title', 'img', 'classify', 'created_at', 'clicks', 'like']);
             if (!$articles->first())
                 return err('该月份没有文章'); 
@@ -270,7 +277,7 @@ class article extends Model
                 // 获取评论总数
                 $item->commentCount = comment_ins()->where('article_id', $item->id)->count();
             }
-            return suc(['data' => $articles]);
+            return suc(['data' => $articles, 'total' => $total, 'page' => rq('page')]);
         }
         
         // // 按年查询
