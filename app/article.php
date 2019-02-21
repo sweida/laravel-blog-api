@@ -157,8 +157,8 @@ class article extends Model
             // 查找指定id是否存在
             if (!$article)
                 return err('article not exists');
-            // 浏览量
-            $article->clicks += 1;
+            // 浏览量+1
+            $article->increment('clicks');
             $article->save();
             // 获取文章标签
             $tag = tag_ins()->where('article_id', rq('id'))->get(['tag']);
