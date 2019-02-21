@@ -8,19 +8,11 @@ sudo: false
 services:
   - mysql
 
-before_install:
-  - nvm install 5.1
-
 before_script:
-  - cp .env.example .env
-  - mysql -e 'create database laravel;'
-  - export DB_DATABASE=laravel
-  - export DB_USERNAME=travis
-  - export DB_PASSWORD=
-  - php artisan key:generate
-
-install:
   - composer install
+  - composer dump-autoload
+  - cp .env.example .env
+  - php artisan key:generate
+  - php artisan migrate
 
-script:
-  - php artisan migrate --force && gulp && vendor/bin/phpunit
+script: phpunit
