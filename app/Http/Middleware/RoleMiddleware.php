@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use Request;
 use Closure;
 
 class RoleMiddleware
@@ -15,10 +16,10 @@ class RoleMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if(rq('username')){
-            $user = user_ins()->where('username', rq('username'))->first();
-            if ($user->is_admin != 1)
-                return response()->json(['status' =>401, 'msg' => '你不是管理员，不能登录']);
+        if(Request::get('username')){
+            $user = (new \App\Usertable)->where('username', Request::get('username'))->first();
+            if ($user && $user->is_admin != 1)
+                return response()->json(['status' =>false, 'msg' => '你不是管理员，不能登录'], 403);
         }
         return $next($request);
     }

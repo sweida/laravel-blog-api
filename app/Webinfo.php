@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Request;
 use Illuminate\Database\Eloquent\Model;
 
 class Webinfo extends Model

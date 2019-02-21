@@ -137,7 +137,7 @@ class Usertable extends Model
         // 查找用户是否存在
         $user = $this->where('username', $username)->first();
         if (!$user) 
-            return err('用户名不存在');
+            return response()->json(['status' => false, 'msg' => '用户名不存在']);
  
         // 检查密码是否正确
         $hashed_password = $user->password;

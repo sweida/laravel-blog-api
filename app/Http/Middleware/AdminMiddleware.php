@@ -16,13 +16,13 @@ class AdminMiddleware
     public function handle($request, Closure $next)
     {
         // 检查是否登录
-        if (!user_ins()->is_login())
-            return response()->json(['status' => 401, 'msg' => '你还没有登录']);
+        if (!(new \App\Usertable)->is_login())
+            return response()->json(['status' => false, 'msg' => '请先登录'], 401);
         
         // 检查是否管理员
-        $user = user_ins()->find(session('user_id'));
+        $user = (new \App\Usertable)->find(session('user_id'));
         if ($user['is_admin'] != 1)
-            return response()->json(['status' => 401, 'msg' => '你不是管理员，没有权限']);
+            return response()->json(['status' => false, 'msg' => '你不是管理员，没有权限'], 403);
 
         return $next($request);
     }
