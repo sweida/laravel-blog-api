@@ -29,5 +29,6 @@
         <env name="SESSION_DRIVER" value="array"/>
         <env name="QUEUE_DRIVER" value="sync"/>
         <env name="MAIL_DRIVER" value="array"/>
+        <env name="APP_KEY" value="base64:DBctZW21ybXLGh3mlf0Mhn/Qc+qr1jdvI/7s/cR/hBQ="/>
     </php>
 </phpunit>
