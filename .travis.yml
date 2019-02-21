@@ -18,7 +18,6 @@ before_script:
   - export DB_USERNAME=travis
   - export DB_PASSWORD=
   - php artisan key:generate
-  - php artisan jwt:generate
 
 install:
   - composer install
