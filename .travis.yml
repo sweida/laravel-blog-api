@@ -1,22 +1,27 @@
 language: php
 
 php:
-  - 7
-
-matrix:
-  fast_finish: true
-  allow_failures:
-    - php: hhvm
+  - 7.2
 
 sudo: false
 
 services:
   - mysql
 
+before_install:
+  - nvm install 5.1
+
 before_script:
-  - mysql -e 'create database if not exists laravel_admin;'
-  - travis_retry composer self-update
-  - travis_retry composer install --no-interaction
+  - cp .env.example .env
+  - mysql -e 'create database laravel;'
+  - export DB_DATABASE=laravel
+  - export DB_USERNAME=travis
+  - export DB_PASSWORD=
+  - php artisan key:generate
+  - php artisan jwt:generate
+
+install:
+  - composer install
 
 script:
-  - composer test
+  - php artisan migrate --force && gulp && vendor/bin/phpunit
