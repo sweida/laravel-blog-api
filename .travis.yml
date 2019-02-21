@@ -3,3 +3,6 @@ language: php
 php:
   - 7.1.9
   - nightly
+
+install:
+  - composer install --prefer-dist --optimize-autoloader --quiet
