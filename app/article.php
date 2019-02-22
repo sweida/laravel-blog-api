@@ -206,7 +206,7 @@ class article extends Model
                 ->orderBy('created_at', 'desc')
                 ->limit($limit)
                 ->skip($skip)
-                ->get(['id', 'title', 'img', 'classify', 'created_at', 'clicks', 'like']);
+                ->get(['id', 'title', 'img', 'classify', 'created_at', 'deleted_at', 'clicks', 'like']);
         } else {
             $total = $this->count();
             // 查看所有文章
