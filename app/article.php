@@ -166,6 +166,12 @@ class article extends Model
             $article->tag = array_column($tag->toArray(), 'tag');
             $article->comment = comment_ins()->where('article_id', rq('id'))->count();
 
+            // 上一篇和下一篇文章
+            $prevId = $this->where('id', '<', rq('id'))->max('id');
+            $nextId = $this->where('id', '>', rq('id'))->min('id');
+            $article->prevArticle = $this->where('id', $prevId)->get(['id', 'title']);
+            $article->nextrAticle = $this->where('id', $nextId)->get(['id', 'title']);
+
             return suc(['data' => $article]);
         }
 
