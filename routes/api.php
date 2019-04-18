@@ -67,3 +67,8 @@ Route::group(['prefix' => 'v1'], function(){
     */
     // Route::post('/cafes', 'API\CafesController@postNewCafe');
 });
+
+
+Route::namespace('Api')->prefix('v1')->group(function () {
+    Route::post('/users','UserController@index')->name('users.index');
+});
