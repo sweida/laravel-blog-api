@@ -63,5 +63,6 @@ class Kernel extends HttpKernel
         'adminlogin' => \App\Http\Middleware\RoleMiddleware::class,
         'adminRole' => \App\Http\Middleware\AdminMiddleware::class,
         'LoginRole' => \App\Http\Middleware\LoginMiddleware::class,
+        'api.refresh'=>\App\Http\Middleware\RefreshTokenMiddleware::class,
     ];
 }

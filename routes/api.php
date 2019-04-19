@@ -70,5 +70,14 @@ Route::group(['prefix' => 'v1'], function(){
 
 
 Route::namespace('Api')->prefix('v1')->group(function () {
+    // Route::get('/users','UserController@index')->name('users.index');
     Route::post('/users','UserController@index')->name('users.index');
+    Route::any('/signup','UserController@signup')->name('users.signup');
+    Route::any('/login','UserController@login')->name('users.login');
+    //当前用户信息
+    Route::middleware('api.refresh')->group(function () {
+        Route::get('/users/info','UserController@info')->name('users.info');
+        //用户退出
+        Route::get('/logout', 'UserController@logout')->name('users.logout');
+    });
 });
