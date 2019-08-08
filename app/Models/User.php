@@ -24,12 +24,12 @@ class User extends Authenticatable implements JWTSubject
 
     // 接受的字段
     protected $fillable = [
-        'username', 'phone', 'email', 'password',
+        'name', 'phone', 'email', 'password', 'avatar_url'
     ];
 
     // 表格隐藏的字段
     protected $hidden = [
-        'password', 'remember_token', 'phone_captcha', 'created_at', 'updated_at'
+        'password', 'remember_token', 'is_admin'
     ];
 
     //将密码进行加密
@@ -37,6 +37,4 @@ class User extends Authenticatable implements JWTSubject
     {
         $this->attributes['password'] = bcrypt($value);
     }
-
-
 }

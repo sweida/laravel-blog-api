@@ -2,12 +2,13 @@
 
 namespace App\Http\Middleware;
 
+use Illuminate\Support\Facades\Auth;
 use Closure;
 
 class AdminMiddleware
 {
     /**
-     * 只有管理员才能操作
+     * 只允许管理员操作
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \Closure  $next
@@ -15,16 +16,15 @@ class AdminMiddleware
      */
     public function handle($request, Closure $next)
     {
-        // 检查是否登录
-        if (!(new \App\Usertable)->is_login())
-            return response()->json(['status' => false, 'msg' => '请先登录'], 401);
-        
-        // 检查是否管理员
-        $user = (new \App\Usertable)->find(session('user_id'));
-        if ($user['is_admin'] != 1)
-            return response()->json(['status' => false, 'msg' => '你不是管理员，没有权限'], 403);
+        $user = Auth::guard('api')->user();
+
+        if ($user->is_admin != 1)
+            return response()->json(
+                ['status' => 'error', 'code' => 403, 'message' => '你没有权限操作'], 403
+            );
 
         return $next($request);
     }
-}
 
+
+}

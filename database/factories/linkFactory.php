@@ -1,14 +1,15 @@
 <?php
 
+/* @var $factory \Illuminate\Database\Eloquent\Factory */
+
+use App\Models\Link;
 use Faker\Generator as Faker;
 
-// 生成友情链接
-$factory->define(App\link::class, function (Faker $faker) {
+$factory->define(Link::class, function (Faker $faker) {
     return [
         'title' => $faker->name,
-        'href' => $faker->url,
+        'url' => $faker->url,
         'desc' => $faker->sentence,
-        'img' => $faker->url,
-        'end_time' => $faker->date($format = 'Y-m-d'), 
+        'img' => $faker->imageUrl($width = 200, $height = 200),
     ];
 });

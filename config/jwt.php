@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of jwt-auth.
+ *
+ * (c) Sean Tymon <tymon148@gmail.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 return [
 
     /*
@@ -7,7 +16,12 @@ return [
     | JWT Authentication Secret
     |--------------------------------------------------------------------------
     |
-    | 用于加密生成 token 的 secret
+    | Don't forget to set this in your .env file, as it will be used to sign
+    | your tokens. A helper command is provided for this:
+    | `php artisan jwt:secret`
+    |
+    | Note: This will be used for Symmetric algorithms only (HMAC),
+    | since RSA and ECDSA use a private/public key combo (See below).
     |
     */
 
@@ -18,9 +32,15 @@ return [
     | JWT Authentication Keys
     |--------------------------------------------------------------------------
     |
-    | 如果你在 .env 文件中定义了 JWT_SECRET 的随机字符串
-    | 那么 jwt 将会使用 对称算法 来生成 token
-    | 如果你没有定有，那么jwt 将会使用如下配置的公钥和私钥来生成 token
+    | The algorithm you are using, will determine whether your tokens are
+    | signed with a random string (defined in `JWT_SECRET`) or using the
+    | following public & private keys.
+    |
+    | Symmetric Algorithms:
+    | HS256, HS384 & HS512 will use `JWT_SECRET`.
+    |
+    | Asymmetric Algorithms:
+    | RS256, RS384 & RS512 / ES256, ES384 & ES512 will use the keys below.
     |
     */
 
@@ -31,7 +51,9 @@ return [
         | Public Key
         |--------------------------------------------------------------------------
         |
-        | 公钥
+        | A path or resource to your public key.
+        |
+        | E.g. 'file://path/to/public/key'
         |
         */
 
@@ -42,7 +64,9 @@ return [
         | Private Key
         |--------------------------------------------------------------------------
         |
-        | 私钥
+        | A path or resource to your private key.
+        |
+        | E.g. 'file://path/to/private/key'
         |
         */
 
@@ -53,7 +77,7 @@ return [
         | Passphrase
         |--------------------------------------------------------------------------
         |
-        | 私钥的密码。 如果没有设置，可以为 null。
+        | The passphrase for your private key. Can be null if none set.
         |
         */
 
@@ -66,31 +90,47 @@ return [
     | JWT time to live
     |--------------------------------------------------------------------------
     |
-    | 指定 access_token 有效的时间长度（以分钟为单位），默认为1小时，您也可以将其设置为空，以产生永不过期的标记
+    | Specify the length of time (in minutes) that the token will be valid for.
+    | Defaults to 1 hour.
+    |
+    | You can also set this to null, to yield a never expiring token.
+    | Some people may want this behaviour for e.g. a mobile app.
+    | This is not particularly recommended, so make sure you have appropriate
+    | systems in place to revoke the token if necessary.
+    | Notice: If you set this to null you should remove 'exp' element from 'required_claims' list.
     |
     */
 
-    'ttl' => env('JWT_TTL', 60),
+    'ttl' => env('JWT_TTL', 1440),
 
     /*
     |--------------------------------------------------------------------------
     | Refresh time to live
     |--------------------------------------------------------------------------
     |
-    | 指定 access_token 可刷新的时间长度（以分钟为单位）。默认的时间为 2 周。
-    | 大概意思就是如果用户有一个 access_token，那么他可以带着他的 access_token 
-    | 过来领取新的 access_token，直到 2 周的时间后，他便无法继续刷新了，需要重新登录。
+    | Specify the length of time (in minutes) that the token can be refreshed
+    | within. I.E. The user can refresh their token within a 2 week window of
+    | the original token being created until they must re-authenticate.
+    | Defaults to 2 weeks.
+    |
+    | You can also set this to null, to yield an infinite refresh time.
+    | Some may want this instead of never expiring tokens for e.g. a mobile app.
+    | This is not particularly recommended, so make sure you have appropriate
+    | systems in place to revoke the token if necessary.
     |
     */
 
-    'refresh_ttl' => env('JWT_REFRESH_TTL', 20160),
+    'refresh_ttl' => env('JWT_REFRESH_TTL', 43200),
 
     /*
     |--------------------------------------------------------------------------
     | JWT hashing algorithm
     |--------------------------------------------------------------------------
     |
-    | 指定将用于对令牌进行签名的散列算法。
+    | Specify the hashing algorithm that will be used to sign the token.
+    |
+    | See here: https://github.com/namshi/jose/tree/master/src/Namshi/JOSE/Signer/OpenSSL
+    | for possible values.
     |
     */
 
@@ -101,8 +141,9 @@ return [
     | Required Claims
     |--------------------------------------------------------------------------
     |
-    | 指定必须存在于任何令牌中的声明。
-    | 
+    | Specify the required claims that must exist in any token.
+    | A TokenInvalidException will be thrown if any of these claims are not
+    | present in the payload.
     |
     */
 
@@ -120,7 +161,11 @@ return [
     | Persistent Claims
     |--------------------------------------------------------------------------
     |
-    | 指定在刷新令牌时要保留的声明密钥。
+    | Specify the claim keys to be persisted when refreshing a token.
+    | `sub` and `iat` will automatically be persisted, in
+    | addition to the these claims.
+    |
+    | Note: If a claim does not exist then it will be ignored.
     |
     */
 
@@ -129,7 +174,23 @@ return [
         // 'bar',
     ],
 
-    
+    /*
+    |--------------------------------------------------------------------------
+    | Lock Subject
+    |--------------------------------------------------------------------------
+    |
+    | This will determine whether a `prv` claim is automatically added to
+    | the token. The purpose of this is to ensure that if you have multiple
+    | authentication models e.g. `App\User` & `App\OtherPerson`, then we
+    | should prevent one authentication request from impersonating another,
+    | if 2 tokens happen to have the same id across the 2 different models.
+    |
+    | Under specific circumstances, you may want to disable this behaviour
+    | e.g. if you only have one authentication model, then you would save
+    | a little on token size.
+    |
+    */
+
     'lock_subject' => true,
 
     /*
@@ -154,8 +215,8 @@ return [
     | Blacklist Enabled
     |--------------------------------------------------------------------------
     |
-    | 为了使令牌无效，您必须启用黑名单。
-    | 如果您不想或不需要此功能，请将其设置为 false。
+    | In order to invalidate tokens, you must have the blacklist enabled.
+    | If you do not want or need this functionality, then set this to false.
     |
     */
 
@@ -166,22 +227,40 @@ return [
     | Blacklist Grace Period
     | -------------------------------------------------------------------------
     |
-    | 当多个并发请求使用相同的JWT进行时，
-    | 由于 access_token 的刷新 ，其中一些可能会失败
-    | 以秒为单位设置请求时间以防止并发的请求失败。
+    | When multiple concurrent requests are made with the same JWT,
+    | it is possible that some of them fail, due to token regeneration
+    | on every request.
+    |
+    | Set grace period in seconds to prevent parallel request failure.
     |
     */
 
     'blacklist_grace_period' => env('JWT_BLACKLIST_GRACE_PERIOD', 0),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Cookies encryption
+    |--------------------------------------------------------------------------
+    |
+    | By default Laravel encrypt cookies for security reason.
+    | If you decide to not decrypt cookies, you will have to configure Laravel
+    | to not encrypt your cookie token by adding its name into the $except
+    | array available in the middleware "EncryptCookies" provided by Laravel.
+    | see https://laravel.com/docs/master/responses#cookies-and-encryption
+    | for details.
+    |
+    | Set it to true if you want to decrypt cookies.
+    |
+    */
 
     'decrypt_cookies' => false,
+
     /*
     |--------------------------------------------------------------------------
     | Providers
     |--------------------------------------------------------------------------
     |
-    | 指定整个包中使用的各种提供程序。
+    | Specify the various providers used throughout the package.
     |
     */
 
@@ -192,18 +271,18 @@ return [
         | JWT Provider
         |--------------------------------------------------------------------------
         |
-        | 指定用于创建和解码令牌的提供程序。
+        | Specify the provider that is used to create and decode the tokens.
         |
         */
 
-        'jwt' => Tymon\JWTAuth\Providers\JWT\Namshi::class,
+        'jwt' => Tymon\JWTAuth\Providers\JWT\Lcobucci::class,
 
         /*
         |--------------------------------------------------------------------------
         | Authentication Provider
         |--------------------------------------------------------------------------
         |
-        | 指定用于对用户进行身份验证的提供程序。
+        | Specify the provider that is used to authenticate users.
         |
         */
 
@@ -214,7 +293,7 @@ return [
         | Storage Provider
         |--------------------------------------------------------------------------
         |
-        | 指定用于在黑名单中存储标记的提供程序。
+        | Specify the provider that is used to store tokens in the blacklist.
         |
         */
 
