@@ -1,3 +1,5 @@
+### v2 版本
+
 
 ### 开发前工作
 
@@ -189,6 +191,3 @@ pdf功能
 ### 生成随机头像
 https://avatars.dicebear.com/v2/identicon/:seed.svg
 ![https://avatars.dicebear.com/v2/identicon/:seed.svg](https://avatars.dicebear.com/v2/identicon/1.svg)
-
-### bug
-图片上传
