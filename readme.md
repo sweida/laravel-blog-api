@@ -38,3 +38,22 @@
 - 传参：
   - 必填：`id` (问题id)
   - 可选：`title`, `desc`
+
+
+
+
+
+### 开发前工作
+
+```
+# 复制配置文件
+cp .env.example .env
+
+# 生成key
+php artisan key:generate
+
+# 生成数据库表
+php artisan migrate
+
+# 
+```

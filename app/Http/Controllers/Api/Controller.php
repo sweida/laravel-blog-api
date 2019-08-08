@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\ApiHelpers\ApiResponse;
+use App\ApiCommon\ApiResponse;
 use App\Http\Controllers\Controller as BaseController;
 
 class Controller extends BaseController

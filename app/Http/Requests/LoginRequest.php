@@ -7,7 +7,8 @@ class LoginRequest extends FormRequest
     public function rules()
     {
         return [
-            'username' => ['required'],
+            // 'id' => ['exists:shop_user,id'],
+            'username' => ['required', 'exists:users,username'],
             'password' => ['required'],
         ];
     }
@@ -15,7 +16,9 @@ class LoginRequest extends FormRequest
     public function messages()
     {
         return [
-            'username.required'=>'用户ID必须填写',
+            // 'id.exists'=>'用户不存在',
+            'username.required'=>'用户名不能为空',
+            'username.exists'=>'用户名不存在',
             'password.required' => '密码不能为空',
         ];
     }

@@ -1,5 +1,5 @@
 <?php
-namespace App\ApiHelpers;
+namespace App\ApiCommon;
 use Symfony\Component\HttpFoundation\Response as FoundationResponse;
 use Response;
 
