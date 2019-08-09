@@ -16,7 +16,7 @@ class AdController extends Controller
 
     //返回列表 10篇为一页
     public function list(){
-        $ads = Ad::paginate(10);
+        $ads = Ad::orderBy('created_at', 'desc')->paginate(10);
         return $this->success($ads);
     }
 
