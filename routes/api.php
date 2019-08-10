@@ -84,7 +84,7 @@ Route::namespace('Api')->prefix('v2')->group(function () {
         Route::post('/message/edit', 'MessageController@edit')->name('message.edit');
         Route::post('/message/delete','MessageController@delete')->name('message.delete');
         // 个人留言
-        Route::get('/message/person','messageController@person')->name('message.person');
+        Route::get('/message/person','MessageController@person')->name('message.person');
     });
     Route::middleware('adminLogin')->group(function () {
         Route::post('/message/deletes','MessageController@deletes')->name('message.deletes');
