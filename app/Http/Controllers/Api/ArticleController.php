@@ -9,13 +9,15 @@ use Illuminate\Http\Request;
 use App\Http\Requests\ArticleRequest;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ArticleController extends Controller
 {
     // 添加文章
     public function add(ArticleRequest $request){
-        $article = Article::create($request->all());
 
+        $article = Article::create($request->all());
+        
         // 将拿到的标签分割字符串
         if ($request->get('tags')){
             $tagArr = explode(",",$request->get('tags'));
@@ -29,6 +31,10 @@ class ArticleController extends Controller
                 ]);
             }
         }
+        
+        // 每篇文章保存一份md文档
+        $this->uploadArticle($article, $request->tags);
+        
         return $this->message('文章添加成功！');
     }
 
@@ -95,6 +101,9 @@ class ArticleController extends Controller
         if ($request->get('tags')){
             $this->editTag($request->id, $request->tags, $request->classify);
         }
+
+        // 每篇文章保存一份md文档
+        $this->uploadArticle($article, $request->tags);
 
         return $this->message('文章修改成功！');
     }
@@ -170,6 +179,18 @@ class ArticleController extends Controller
             $newArray[$i]['tags'] = array_unique(array_column($tags->toArray(), 'tag'));
         }
         return $this->success($newArray);
+    }
+
+    // 文章保存为md文档
+    public function uploadArticle($article, $tags) {
+        $id = $article->id;
+        $title = $article->title;
+        $classify = $article->classify;
+        $time = $article->created_at;
+        $text = $article->content;
+
+        $content = "## 标题：".$title."\r\n"."> 分类：".$classify."\r\n"."> 标签：".$tags."\r\n"."> 创建时间：".$time."  \r\n\r\n".$text;
+        Storage::disk('local')->put('articles/'.$id.'.md', $content);
     }
 
 }
