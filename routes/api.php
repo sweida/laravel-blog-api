@@ -72,7 +72,7 @@ Route::namespace('Api')->prefix('v2')->group(function () {
         Route::post('/comment/edit', 'CommentController@edit')->name('comment.edit');
         Route::post('/comment/delete','CommentController@delete')->name('comment.delete');
         // 获取个人的所有评论
-        Route::get('/comment/person','CommentController@person')->name('comment.person');
+        Route::post('/comment/person','CommentController@person')->name('comment.person');
     });
     Route::middleware('adminLogin')->group(function () {
         Route::post('/comment/deletes','CommentController@deletes')->name('comment.deletes');
@@ -84,7 +84,7 @@ Route::namespace('Api')->prefix('v2')->group(function () {
         Route::post('/message/edit', 'MessageController@edit')->name('message.edit');
         Route::post('/message/delete','MessageController@delete')->name('message.delete');
         // 个人留言
-        Route::get('/message/person','MessageController@person')->name('message.person');
+        Route::post('/message/person','MessageController@person')->name('message.person');
     });
     Route::middleware('adminLogin')->group(function () {
         Route::post('/message/deletes','MessageController@deletes')->name('message.deletes');
