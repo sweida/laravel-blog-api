@@ -25,11 +25,12 @@ class UserController extends Controller
         $token=Auth::guard('api')->attempt(
             ['name'=>$request->name,'password'=>$request->password]
         );
-        if($token)
+        if($token) {
             $user = Auth::guard('api')->user();
             $user->updated_at = time();
             $user->update();
             return $this->success(['token' => 'Bearer ' . $token]);
+        }
         return $this->failed('密码有误！', 200);
     }
     
