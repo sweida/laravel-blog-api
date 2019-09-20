@@ -23,10 +23,11 @@ class TagController extends Controller
             return $this->failed("该标签下的文章暂时下架", 200); 
         }
 
+        // 拿回文章的标签和评论总数
         foreach($articles as $item){
             if ($item->article != null){
                 $tags = Tag::where('article_id', $item->article_id)->get(['tag']);
-                $item->article->view_count = visits($item)->count();
+                $item->article->view_count = visits($item->article)->count();
                 // 去除重复标签
                 $item->article->tags = array_values(array_unique(array_column($tags->toArray(), 'tag')));
                 $item->article->commentCount = Comment::where('article_id', $item->id)->count();

@@ -1,17 +1,15 @@
-### v2 版本
+## v2 版本
 
-
-### 开发前工作
-
+### 启动项目
 ```
-# 复制配置文件
+# 复制配置文件，并修改配置文件，修改数据名称和密码，启动redis，配置redis密码（文章点击量使用redis统计）
 cp .env.example .env
-
-# 修改时区 config > app.php文件
-'timezone' => 'PRC'
 
 # 生成key
 php artisan key:generate
+
+# 生成jwt-key
+php artisan jwt:secret
 
 # 生成数据库表
 php artisan migrate
@@ -19,15 +17,21 @@ php artisan migrate
 # 填充数据
 php artisan db:seed
 
-# 清空数据库重新生成表
-php artisan migrate:refresh
-
+# 或者合成一步
 # 清空数据库重新生成表并生成数据
-php artisan migrate:refresh --seed
+php artisan migrate --seed
 
 # postman请求头设置herders (错误时才会返回json格式)
 X-Requested-With => XMLHttpRequest
+
+# 启动8080端口
+php artisan serve --port=8080
+
+# 查看接口版本号
+http://localhost:8080/api/version
 ```
+
+## 开发使用的插件
 
 ### 安装jwt-auth
 ```
