@@ -4,8 +4,8 @@
 
 重置密码的验证码是 {{ $data->captcha }}，请在5分钟内验证。
 
-@component('mail::button', ['url' => ''])
-Button Text
+@component('mail::button', ['url' => 'golang365.com/#/recover'])
+去验证
 @endcomponent
 
 
