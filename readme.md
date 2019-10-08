@@ -95,6 +95,27 @@ php artisan make:mail NweUser --markdown=mails.newsuer
 new App\Mails\NewUser()
 ```
 
+### .env邮件配置
+```
+# 163邮件配置
+MAIL_DRIVER=smtp
+MAIL_HOST=smtp.163.com
+MAIL_PORT=465
+MAIL_USERNAME=账号名@163.com
+MAIL_PASSWORD=密码
+MAIL_FROM_ADDRESS=账号名@163.com
+MAIL_FROM_NAME=天行九歌
+MAIL_ENCRYPTION=ssl
+
+# smtp测试配置
+MAIL_DRIVER=smtp
+MAIL_HOST=smtp.mailtrap.io
+MAIL_PORT=2525
+MAIL_USERNAME=xxxxx
+MAIL_PASSWORD=xxxxxx
+MAIL_FROM_ADDRESS=weidaxyy@163.com
+MAIL_FROM_NAME=天行九歌
+```
 
 ### 图片上传又拍云
 ```
