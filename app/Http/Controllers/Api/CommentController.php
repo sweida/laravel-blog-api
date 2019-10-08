@@ -68,7 +68,7 @@ class CommentController extends Controller
     // 获取所有评论 分页
     public function list(){
         $comments = Comment::with(['user'=>function($query){
-                $query->select('id','name');
+                $query->select('id', 'name', 'avatar_url');
                 }])
             ->with(['article'=>function($query){
                 $query->select('id','title');
@@ -82,7 +82,7 @@ class CommentController extends Controller
     public function read(CommentRequest $request){
         // 关联模型写在model里
         $comments = Comment::with(['user'=>function($query){
-                $query->select('id','name');
+                $query->select('id', 'name', 'avatar_url');
                 }])
             ->where('article_id', $request->article_id)
             ->orderBy('created_at', 'desc')

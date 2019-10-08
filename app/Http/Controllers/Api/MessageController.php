@@ -60,7 +60,7 @@ class MessageController extends Controller
     // 获取所有留言 分页
     public function list(){
         $messages = Message::with(['user'=>function($query){
-                $query->select('id','name');
+                $query->select('id','name', 'avatar_url');
             }])
             ->orderBy('created_at', 'desc')
             ->paginate(10);

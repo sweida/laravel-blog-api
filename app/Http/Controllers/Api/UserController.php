@@ -9,8 +9,9 @@ use App\Http\Requests\UserRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
-
+// use Overtrue\Socialite\SocialiteManager;
 // use App\Http\Resources\UserResource;
+use Socialite;
 
 class UserController extends Controller
 {
@@ -77,6 +78,34 @@ class UserController extends Controller
         $user->update(['password' => $request->new_password]);
         return $this->message('密码修改成功');
     }
+
+    public function redirectToProvider()
+    {
+        return Socialite::driver('github')->redirect();
+    }
+
+    public function githubLogin()
+    {
+        $githubUser = Socialite::driver('github')->user();
+
+        $user = [
+            'email' => $githubUser->email,
+            'name' => $githubUser->nickname,
+            'avatar_url' => $githubUser->avatar,
+            'password' => bcrypt(str_random(16))
+        ];
+        User::updateOrCreate(['email' => $user['email']], $user);
+
+        $token=Auth::guard('api')->attempt(
+            ['name'=>$user['name'],'password'=>$user['password']]
+        );
+        $url = 'http://localhost:9001/login';
+
+        return view('githubLogin')->with(['token' => $token, 'url' => $url]);
+    }
+
+
+
 
 
 }

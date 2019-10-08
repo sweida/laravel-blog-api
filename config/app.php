@@ -166,6 +166,8 @@ return [
         Tymon\JWTAuth\Providers\LaravelServiceProvider::class,
         // 又拍云
         JellyBool\Flysystem\Upyun\UpyunServiceProvider::class,
+        // github授权登录
+        Overtrue\LaravelSocialite\ServiceProvider::class,
         /*
          * Package Service Providers...
          */
@@ -230,6 +232,7 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+        'Socialite' => Overtrue\LaravelSocialite\Socialite::class,
 
     ],
 

@@ -26,6 +26,9 @@ Route::get('/version', function() {
 Route::namespace('Api')->prefix('v2')->group(function () {
     Route::post('/signup','UserController@signup')->name('users.signup');
     Route::post('/login','UserController@login')->name('users.login');
+    Route::get('/github','UserController@redirectToProvider')->name('users.githublogin');
+    Route::get('/github/login','UserController@githubLogin')->name('users.githublogin');
+
     // 管理员登录
     Route::middleware('adminLogin')->group(function () {
         Route::post('/admin/login', 'UserController@login')->name('users.adminlogin');
