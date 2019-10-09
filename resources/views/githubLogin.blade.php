@@ -76,8 +76,7 @@
 
 <script>
     window.onload = function () {
-        window.opener.postMessage("bearer {{ $token }}", "{{ $url }}");
-        window.close();
+        window.location.href = `{{ $url }}?token={{ $token }}`
     }
 </script>
     </body>

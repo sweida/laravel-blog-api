@@ -12,9 +12,9 @@ class MessageController extends Controller
     // 添加留言, 回复留言
     public function add(MessageRequest $request){
         // 获取用户id
-        $user = Auth::guard('api')->user();
+        $user = Auth::guard('userAuth')->user();
         $array = $request->all();
-        $array['user_id'] = $user['id'];
+        $array['user_id'] = $user['user_id'];
 
         Message::create($array);
         return $this->message('留言成功！');
@@ -23,9 +23,9 @@ class MessageController extends Controller
     // 修改留言
     public function edit(MessageRequest $request){
         $message = Message::find($request->id);
-        $user = Auth::guard('api')->user();
+        $user = Auth::guard('userAuth')->user();
 
-        if (!$message['user_id'] || ($user['id'] != $message['user_id']))
+        if (!$message['user_id'] || ($user['user_id'] != $message['user_id']))
             return $this->failed('你没有权限修改');
 
         $message->content = $request->get('content');
@@ -37,9 +37,9 @@ class MessageController extends Controller
     // 删除留言
     public function delete(MessageRequest $request){
         $message = Message::find($request->id);
-        $user = Auth::guard('api')->user();
+        $user = Auth::guard('userAuth')->user();
 
-        if (!$message['user_id'] || ($user['id'] != $message['user_id']))
+        if (!$message['user_id'] || ($user['user_id'] != $message['user_id']))
             return $this->failed('你没有权限删除', 200);
 
         return $message->delete() ?
@@ -69,9 +69,9 @@ class MessageController extends Controller
 
     // 查看个人留言
     public function person(){
-        $user = Auth::guard('api')->user();
+        $user = Auth::guard('userAuth')->user();
 
-        $messages = Message::where('user_id', $user['id'])
+        $messages = Message::where('user_id', $user['user_id'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
         return $this->success($messages);

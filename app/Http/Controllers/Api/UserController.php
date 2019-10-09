@@ -4,8 +4,11 @@ namespace App\Http\Controllers\Api;
 
 
 use App\Models\User;
+use App\Models\GithubUser;
+use App\Models\UserAuth;
 use Hash;
 use App\Http\Requests\UserRequest;
+use App\Http\Requests\UserAuthRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Exceptions\TokenExpiredException;
@@ -17,33 +20,55 @@ class UserController extends Controller
 {
     //用户注册
     public function signup(UserRequest $request){
-        User::create($request->all());
+        $user = User::create($request->all());
+        $emailIdentifier = [
+            'user_id' => $user->id,
+            'identity_type' => 'email',
+            'identifier' => $request->email,
+            'password' => $request->password
+        ];
+        $nameIdentifier = [
+            'user_id' => $user->id,
+            'identity_type' => 'name',
+            'identifier' => $request->name,
+            'password' => $request->password
+        ];
+        UserAuth::create($emailIdentifier);
+        UserAuth::create($nameIdentifier);
+
         return $this->message('用户注册成功');
     }
 
     //用户登录
-    public function login(UserRequest $request){
-        $token=Auth::guard('api')->attempt(
-            ['name'=>$request->name,'password'=>$request->password]
+    public function login(UserAuthRequest $request){
+        $token=Auth::guard('userAuth')->attempt(
+            [
+                'identity_type' => $request->type, 
+                'identifier'=>$request->name,
+                'password'=>$request->password
+            ]
         );
         if($token) {
-            $user = Auth::guard('api')->user();
-            $user->updated_at = time();
-            $user->update();
-            return $this->success(['token' => 'Bearer ' . $token]);
+            $userAuth = Auth::guard('userAuth')->user();
+            $user = User::find($userAuth->user_id);
+            $user->update([$user->updated_at = time()]);
+
+            return $this->success(['token' => 'Bearer '.$token, 'user' => $user]);
         }
         return $this->failed('密码有误！', 200);
     }
     
     //用户退出
     public function logout(){
-        Auth::guard('api')->logout();
+        Auth::guard('userAuth')->logout();
         return $this->message('退出登录成功!');
     }
 
     //返回当前登录用户信息
     public function info(){
-        $user = Auth::guard('api')->user();
+        $userAuth = Auth::guard('userAuth')->user();
+        $user = User::find($userAuth->user_id);
+
         if ($user->is_admin==1)
             $user->admin = true;
         return $this->success($user);
@@ -88,22 +113,37 @@ class UserController extends Controller
     {
         $githubUser = Socialite::driver('github')->user();
 
+        // 邮件存在则不创建，共享一个账号数据
         $user = [
             'email' => $githubUser->email,
             'name' => $githubUser->nickname,
             'avatar_url' => $githubUser->avatar,
             'password' => bcrypt(str_random(16))
         ];
-        User::updateOrCreate(['email' => $user['email']], $user);
+        $newUser = User::firstOrCreate(['email' => $user['email']], $user);
 
-        $token=Auth::guard('api')->attempt(
-            ['name'=>$user['name'],'password'=>$user['password']]
+        // 创建一条github账号
+        $githubIdentifier = [
+            'user_id' => $newUser->id,
+            'identity_type' => 'github',
+            'identifier' => $githubUser->email,
+            'password' => bcrypt(str_random(16))
+        ];
+        UserAuth::updateOrCreate([
+            'identifier' => $githubUser->email, 
+            'identity_type' => 'github'
+        ], $githubIdentifier);
+
+        $token=Auth::guard('userAuth')->attempt(
+            [
+                'identity_type' => 'github', 
+                'identifier' => $githubUser->email, 
+                'password' => $githubIdentifier['password']
+            ]
         );
-        $url = 'http://localhost:9001/login';
 
-        return view('githubLogin')->with(['token' => $token, 'url' => $url]);
+        return view('githubLogin')->with(['token' => 'Bearer '.$token, 'url' => env('LOGIN_REDIRECT').'#/login']);
     }
-
 
 
 

@@ -92,12 +92,12 @@ class CommentController extends Controller
 
     // 查看个人评论
     public function person(){
-        $user = Auth::guard('api')->user();
+        $user = Auth::guard('userAuth')->user();
 
         $comments = Comment::with(['article'=>function($query){
                     $query->select('id', 'title');
                 }])
-            ->where('user_id', $user['id'])
+            ->where('user_id', $user['user_id'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
         return $this->success($comments);
