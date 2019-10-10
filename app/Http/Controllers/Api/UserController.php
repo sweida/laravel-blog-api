@@ -60,7 +60,9 @@ class UserController extends Controller
     
     //用户退出
     public function logout(){
-        Auth::guard('userAuth')->logout();
+        $aa = Auth::guard('userAuth')->logout();
+        $bb = Auth::guard('api')->logout();
+        return ['s' => $aa, 'd' => $bb];
         return $this->message('退出登录成功!');
     }
 
@@ -94,13 +96,18 @@ class UserController extends Controller
 
     // 修改密码
     public function resetpassword(UserRequest $request){
-        $user = Auth::guard('api')->user();
+        $user = Auth::guard('userAuth')->user();
         $oldpassword = $request->get('old_password');
 
         if (!Hash::check($oldpassword, $user->password))
             return $this->failed('旧密码错误', 200);
 
-        $user->update(['password' => $request->new_password]);
+        // 修改所有关联账号密码
+        $userAuths = UserAuth::where('user_id', $user->user_id)->get();
+        foreach($userAuths as $item){
+            $item->update(['password' => $request->new_password]);
+        }
+
         return $this->message('密码修改成功');
     }
 
