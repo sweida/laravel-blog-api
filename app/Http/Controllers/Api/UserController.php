@@ -40,6 +40,7 @@ class UserController extends Controller
     }
 
 
+    // 将以前旧账号数据添加到有账号表
     public function createPassword() {
         $users = User::get();
 
