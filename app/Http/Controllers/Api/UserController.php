@@ -39,6 +39,30 @@ class UserController extends Controller
         return $this->message('用户注册成功');
     }
 
+
+    public function createPassword() {
+        $users = User::get();
+
+        foreach($users as $item) {
+            $emailIdentifier = [
+                'user_id' => $item->id,
+                'identity_type' => 'email',
+                'identifier' => $item->email,
+                'password' => $item->password
+            ];
+            $nameIdentifier = [
+                'user_id' => $item->id,
+                'identity_type' => 'name',
+                'identifier' => $item->name,
+                'password' => $item->password
+            ];
+            UserAuth::create($emailIdentifier);
+            UserAuth::create($nameIdentifier);
+        }
+        // return ['s' => $users];
+        return $this->message('批量生成成功');
+    }
+
     //用户登录
     public function login(UserAuthRequest $request){
         $token=Auth::guard('api')->attempt(
