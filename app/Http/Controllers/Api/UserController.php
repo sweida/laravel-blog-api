@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Api;
 
 
 use App\Models\User;
-use App\Models\GithubUser;
 use App\Models\UserAuth;
 use Hash;
 use App\Http\Requests\UserRequest;
@@ -18,6 +17,7 @@ use Socialite;
 
 class UserController extends Controller
 {
+
     //用户注册
     public function signup(UserRequest $request){
         $user = User::create($request->all());
@@ -41,7 +41,7 @@ class UserController extends Controller
 
     //用户登录
     public function login(UserAuthRequest $request){
-        $token=Auth::guard('userAuth')->attempt(
+        $token=Auth::guard('api')->attempt(
             [
                 'identity_type' => $request->type, 
                 'identifier'=>$request->name,
@@ -49,26 +49,24 @@ class UserController extends Controller
             ]
         );
         if($token) {
-            $userAuth = Auth::guard('userAuth')->user();
+            $userAuth = Auth::guard('api')->user();
             $user = User::find($userAuth->user_id);
             $user->update([$user->updated_at = time()]);
 
-            return $this->success(['token' => 'Bearer '.$token, 'user' => $user]);
+            return $this->success(['token' => 'Bearer ' . $token]);
         }
         return $this->failed('密码有误！', 200);
     }
     
     //用户退出
     public function logout(){
-        $aa = Auth::guard('userAuth')->logout();
-        $bb = Auth::guard('api')->logout();
-        return ['s' => $aa, 'd' => $bb];
+        Auth::guard('api')->logout();
         return $this->message('退出登录成功!');
     }
 
     //返回当前登录用户信息
     public function info(){
-        $userAuth = Auth::guard('userAuth')->user();
+        $userAuth = Auth::guard('api')->user();
         $user = User::find($userAuth->user_id);
 
         if ($user->is_admin==1)
@@ -96,7 +94,7 @@ class UserController extends Controller
 
     // 修改密码
     public function resetpassword(UserRequest $request){
-        $user = Auth::guard('userAuth')->user();
+        $user = Auth::guard('api')->user();
         $oldpassword = $request->get('old_password');
 
         if (!Hash::check($oldpassword, $user->password))
@@ -141,7 +139,8 @@ class UserController extends Controller
             'identity_type' => 'github'
         ], $githubIdentifier);
 
-        $token=Auth::guard('userAuth')->attempt(
+        // $token = Auth::guard('api')->tokenById($newUser->id);
+        $token=Auth::guard('api')->attempt(
             [
                 'identity_type' => 'github', 
                 'identifier' => $githubUser->email, 
@@ -149,7 +148,7 @@ class UserController extends Controller
             ]
         );
 
-        return view('githubLogin')->with(['token' => 'Bearer '.$token, 'url' => env('LOGIN_REDIRECT').'#/login']);
+        return view('githubLogin')->with(['token' => 'Bearer ' . $token, 'url' => env('LOGIN_REDIRECT').'#/login']);
     }
 
 

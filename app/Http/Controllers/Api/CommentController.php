@@ -12,9 +12,9 @@ class CommentController extends Controller
     // 添加评论, 回复评论
     public function add(CommentRequest $request){
         // 获取用户id
-        $user = Auth::guard('api')->user();
+        $userAuth = Auth::guard('api')->user();
         $array = $request->all();
-        $array['user_id'] = $user['id'];
+        $array['user_id'] = $userAuth['user_id'];
 
         Comment::create($array);
         return $this->message('评论成功！');
@@ -22,18 +22,18 @@ class CommentController extends Controller
 
     public function common(Request $request, $text){
         $comment = Comment::find($request->id);
-        $user = Auth::guard('api')->user();
+        $userAuth = Auth::guard('api')->user();
 
-        if (!$comment['user_id'] || ($user['id'] != $comment['user_id']))
+        if (!$comment['user_id'] || ($userAuth['user_id'] != $comment['user_id']))
             return $this->failed($text);
     }
 
     // 修改评论
     public function edit(CommentRequest $request){
         $comment = Comment::find($request->id);
-        $user = Auth::guard('api')->user();
+        $userAuth = Auth::guard('api')->user();
 
-        if (!$comment['user_id'] || ($user['id'] != $comment['user_id']))
+        if (!$comment['user_id'] || ($userAuth['user_id'] != $comment['user_id']))
             return $this->failed('你没有权限修改');
 
         $comment->content = $request->get('content');
@@ -45,9 +45,9 @@ class CommentController extends Controller
     // 删除评论
     public function delete(CommentRequest $request){
         $comment = Comment::find($request->id);
-        $user = Auth::guard('api')->user();
+        $userAuth = Auth::guard('api')->user();
 
-        if (!$comment['user_id'] || ($user['id'] != $comment['user_id']))
+        if (!$comment['user_id'] || ($userAuth['user_id'] != $comment['user_id']))
             return $this->failed('你没有权限删除');
 
         return $comment->delete() ?
@@ -92,12 +92,12 @@ class CommentController extends Controller
 
     // 查看个人评论
     public function person(){
-        $user = Auth::guard('userAuth')->user();
+        $userAuth = Auth::guard('api')->user();
 
         $comments = Comment::with(['article'=>function($query){
                     $query->select('id', 'title');
                 }])
-            ->where('user_id', $user['user_id'])
+            ->where('user_id', $userAuth['user_id'])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
         return $this->success($comments);

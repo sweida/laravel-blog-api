@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 use Closure;
 
 class AdminMiddleware
@@ -16,7 +17,8 @@ class AdminMiddleware
      */
     public function handle($request, Closure $next)
     {
-        $user = Auth::guard('api')->user();
+        $userAuth = Auth::guard('api')->user();
+        $user = User::find($userAuth->user_id);
 
         if ($user->is_admin != 1)
             return response()->json(

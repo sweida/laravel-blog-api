@@ -47,11 +47,6 @@ return [
             'hash' => false,
         ],
 
-        'userAuth' => [
-            'driver' => 'jwt',
-            'provider' => 'userAuths',
-            'hash' => false,
-        ],
     ],
 
     /*
@@ -72,12 +67,8 @@ return [
     */
 
     'providers' => [
-        'users' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\User::class,
-        ],
 
-        'userAuths' => [
+        'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\UserAuth::class,
         ],
