@@ -26,6 +26,9 @@ Route::get('/version', function() {
 Route::namespace('Api')->prefix('v2')->group(function () {
     Route::post('/signup','UserController@signup')->name('users.signup');
     Route::post('/login','UserController@login')->name('users.login');
+    Route::get('/github','UserController@redirectToProvider')->name('users.githublogin');
+    Route::get('/github/login','UserController@githubLogin')->name('users.githublogin');
+
     // 管理员登录
     Route::middleware('adminLogin')->group(function () {
         Route::post('/admin/login', 'UserController@login')->name('users.adminlogin');
@@ -78,9 +81,9 @@ Route::namespace('Api')->prefix('v2')->group(function () {
         Route::post('/comment/deletes','CommentController@deletes')->name('comment.deletes');
     });
     // 留言模块
-    Route::post('/message/add', 'MessageController@add')->name('message.add');
     Route::post('/message/list', 'MessageController@list')->name('message.list');
     Route::middleware('api.refresh')->group(function () {
+        Route::post('/message/add', 'MessageController@add')->name('message.add');
         Route::post('/message/edit', 'MessageController@edit')->name('message.edit');
         Route::post('/message/delete','MessageController@delete')->name('message.delete');
         // 个人留言
