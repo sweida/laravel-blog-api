@@ -23,7 +23,9 @@ Route::get('/version', function() {
     return ["name" => "laravel-blog-api", "author" => "sweida", "version" => "v2"];
 });
 
+
 Route::namespace('Api')->prefix('v2')->group(function () {
+    Route::get('/ss', 'UserController@createPassword')->name('ss');
     Route::post('/signup','UserController@signup')->name('users.signup');
     Route::post('/login','UserController@login')->name('users.login');
     Route::get('/github','UserController@redirectToProvider')->name('users.githublogin');

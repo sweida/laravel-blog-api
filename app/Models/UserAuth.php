@@ -32,10 +32,10 @@ class UserAuth extends Authenticatable implements JWTSubject
     public $timestamps = false;
 
     //将密码进行加密
-    public function setPasswordAttribute($value)
-    {
-        $this->attributes['password'] = bcrypt($value);
-    }
+    // public function setPasswordAttribute($value)
+    // {
+    //     $this->attributes['password'] = bcrypt($value);
+    // }
     
 
 
