@@ -69,10 +69,10 @@ Route::namespace('Api')->prefix('v2')->group(function () {
     });
 
     // 评论模块
-    Route::post('/comment/add', 'CommentController@add')->name('comment.add');
     Route::post('/comment/list', 'CommentController@list')->name('comment.list');
     Route::post('/comment/read','CommentController@read')->name('comment.read');
     Route::middleware('api.refresh')->group(function () {
+        Route::post('/comment/add', 'CommentController@add')->name('comment.add');
         Route::post('/comment/edit', 'CommentController@edit')->name('comment.edit');
         Route::post('/comment/delete','CommentController@delete')->name('comment.delete');
         // 获取个人的所有评论
