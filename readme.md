@@ -21,6 +21,9 @@ php artisan db:seed
 # 清空数据库重新生成表并生成数据
 php artisan migrate --seed
 
+# 开通又拍云账号
+.env 文件配置又拍云信息
+
 # postman请求头设置herders (错误时才会返回json格式)
 X-Requested-With => XMLHttpRequest
 
@@ -118,7 +121,7 @@ MAIL_FROM_NAME=天行九歌
 ```
 
 ### 图片上传又拍云
-```
+```php
 composer require "jellybool/flysystem-upyun"
 
 # config/app.php 添加
@@ -132,14 +135,20 @@ return [
     //...
       'upyun' => [
             'driver'        => 'upyun', 
-            'bucket'        => 'your-bucket-name',// 服务名字
-            'operator'      => 'oparator-name', // 操作员的名字
-            'password'      => 'operator-password', // 操作员的密码
-            'domain'        => 'xxxxx.b0.upaiyun.com', // 服务分配的域名
-            'protocol'     => 'https', // 服务使用的协议，如需使用 http，在此配置 http
+            'bucket'        => env('UPYUN_PROJECT_NAME'),   // 服务名字
+            'operator'      => env('UPYUN_OPERATOR_NAME'),  // 操作员的名字
+            'password'      => env('UPYUN_OPERATOR_PASSWORD'), // 操作员的密码
+            'domain'        => env('UPYUN_CNAME'), // 服务分配的域名
+            'protocol'     => 'http', // 服务使用的协议，如需使用 http，在此配置 http
         ],
     //...
 ];
+
+// .env配置文件
+UPYUN_PROJECT_NAME = 又拍云项目名称
+UPYUN_OPERATOR_NAME = 账号
+UPYUN_OPERATOR_PASSWORD = 密码
+UPYUN_CNAME = 项目CNAME XXXXX.b0.aicdn.com
 ```
 
 

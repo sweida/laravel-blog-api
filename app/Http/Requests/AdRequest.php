@@ -14,7 +14,6 @@ class AdRequest extends FormRequest
         } else {
             return [
                 'id' => ['exists:ads,id'],
-                'type' => ['exists:ads,type']
             ];
         }
 
@@ -27,7 +26,6 @@ class AdRequest extends FormRequest
             'url.required' => '地址不能为空',
             'id.required'=>'id不能为空',
             'id.exists' => 'id不存在',
-            'type.exists' => '类型不存在',
         ];
     }
 }

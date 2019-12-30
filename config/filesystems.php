@@ -66,10 +66,10 @@ return [
         
       'upyun' => [
             'driver'        => 'upyun', 
-            'bucket'        => 'laravel-blog',// 服务名字
-            'operator'      => env('UPYUN_OPERATOR_NAME'), // 操作员的名字
+            'bucket'        => env('UPYUN_PROJECT_NAME'),   // 服务名字
+            'operator'      => env('UPYUN_OPERATOR_NAME'),  // 操作员的名字
             'password'      => env('UPYUN_OPERATOR_PASSWORD'), // 操作员的密码
-            'domain'        => 'laravel-blog.b0.aicdn.com', // 服务分配的域名
+            'domain'        => env('UPYUN_CNAME'), // 服务分配的域名
             'protocol'     => 'http', // 服务使用的协议，如需使用 http，在此配置 http
         ],
     ],
