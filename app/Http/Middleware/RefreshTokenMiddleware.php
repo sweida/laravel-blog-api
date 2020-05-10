@@ -40,7 +40,9 @@ class RefreshTokenMiddleware extends BaseMiddleware
                 // 刷新用户的 token
                 $token = $this->auth->refresh();
                 // 使用一次性登录以保证此次请求的成功
-                Auth::guard('api')->onceUsingId($this->auth->manager()->getPayloadFactory()->buildClaimsCollection()->toPlainArray()['sub']);
+                Auth::guard('api')->onceUsingId(
+                    $this->auth->manager()->getPayloadFactory()->buildClaimsCollection()->toPlainArray()['sub']
+                );
             } catch (JWTException $exception) {
                 // 如果捕获到此异常，即代表 refresh 也过期了，用户无法刷新令牌，需要重新登录。
                 throw new UnauthorizedHttpException('jwt-auth', $exception->getMessage());

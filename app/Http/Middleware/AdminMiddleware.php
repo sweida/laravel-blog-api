@@ -22,7 +22,11 @@ class AdminMiddleware
 
         if ($user->is_admin != 1)
             return response()->json(
-                ['status' => 'error', 'code' => 403, 'message' => '你没有权限操作'], 403
+                [
+                    'status' => 'error',
+                    'code' => 403,
+                    'message' => '你没有权限操作'
+                ], 403
             );
 
         return $next($request);

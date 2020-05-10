@@ -78,7 +78,7 @@ class UserController extends Controller
             $user = User::find($userAuth->user_id);
             $user->update([$user->updated_at = time()]);
 
-            return $this->success(['token' => 'Bearer ' . $token]);
+            return $this->success(['token' => $token]);
         }
         return $this->failed('密码有误！', 200);
     }
@@ -94,7 +94,7 @@ class UserController extends Controller
         $userAuth = Auth::guard('api')->user();
         $user = User::find($userAuth->user_id);
 
-        if ($user->is_admin==1)
+        if ($user->is_admin == 1)
             $user->admin = true;
         return $this->success($user);
     }
@@ -173,7 +173,7 @@ class UserController extends Controller
             ]
         );
 
-        return view('githubLogin')->with(['token' => 'Bearer ' . $token, 'url' => env('LOGIN_REDIRECT').'#/login']);
+        return view('githubLogin')->with(['token' => $token, 'url' => env('LOGIN_REDIRECT').'#/login']);
     }
 
 

@@ -20,7 +20,11 @@ class AdminLoginMiddleware
 
         if ($user && $user->is_admin != 1)
             return response()->json(
-                ['status' => 'error', 'code' => 403, 'message' => '你不是管理员，不能登录'], 403
+                [
+                    'status' => 'error',
+                    'code' => 403,
+                    'message' => '你不是管理员，不能登录'
+                ], 403
             );
 
         return $next($request);

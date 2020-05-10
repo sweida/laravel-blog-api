@@ -101,6 +101,7 @@ return [
     |
     */
 
+    // 更新token时间，单位分钟
     'ttl' => env('JWT_TTL', 1440),
 
     /*
@@ -120,6 +121,7 @@ return [
     |
     */
 
+    // token到期时间
     'refresh_ttl' => env('JWT_REFRESH_TTL', 43200),
 
     /*
