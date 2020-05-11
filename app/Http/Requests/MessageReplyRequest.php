@@ -3,25 +3,20 @@
 namespace App\Http\Requests;
 
 
-class MessageRequest extends FormRequest
+class MessageReplyRequest extends FormRequest
 {
-
     public function rules()
     {
 
         switch (FormRequest::getPathInfo()){
-            case '/api/v2/message/add':
+            case '/api/v2/message/reply':
                 return [
-                    'content' => ['required'],
+                    'message_id' => ['required', 'exists:messages,id'],
+                    'content' => ['required']
                 ];
-            case '/api/v2/message/edit':
+            case '/api/v2/message/reply/delete':
                 return [
-                    'id' => ['required', 'exists:messages,id'],
-                    'content' => ['required'],
-                ];
-            case '/api/v2/message/delete':
-                return [
-                    'id' => ['required', 'exists:messages,id']
+                    'id' => ['required', 'exists:message_replies,id']
                 ];
         }
 
@@ -31,9 +26,9 @@ class MessageRequest extends FormRequest
     {
         return [
             'content.required' => '留言内容不能为空',
+            'message_id.exists' => '回复id不存在',
             'id.required' => 'id不能为空',
             'id.exists' => 'id不存在',
         ];
     }   
-    
 }

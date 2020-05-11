@@ -3,13 +3,14 @@
 namespace App\Http\Controllers\Api;
 
 use App\Models\Message;
+use App\Models\MessageReply;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Http\Requests\MessageRequest;
 
 class MessageController extends Controller
 {
-    // 添加留言, 回复留言
+    // 添加留言
     public function add(MessageRequest $request){
         // 获取用户id
         $userAuth = Auth::guard('api')->user();
@@ -64,6 +65,16 @@ class MessageController extends Controller
             }])
             ->orderBy('created_at', 'desc')
             ->paginate(10);
+        foreach($messages as $item){
+            $item->reply = MessageReply::with([
+                'user'=>function($query){
+                    $query->select('id','name', 'avatar_url');
+                },
+                'topic_user'=>function($query){
+                    $query->select('id','name', 'avatar_url');
+                }
+            ])->where('message_id', $item->id)->get();
+        }
         return $this->success($messages);
     }
 
