@@ -85,8 +85,10 @@ Route::namespace('Api')->prefix('v2')->group(function () {
     Route::post('/message/list', 'MessageController@list')->name('message.list');
     Route::middleware('api.refresh')->group(function () {
         Route::post('/message/add', 'MessageController@add')->name('message.add');
+        Route::post('/message/reply', 'MessageReplyController@reply')->name('message.reply');
         Route::post('/message/edit', 'MessageController@edit')->name('message.edit');
         Route::post('/message/delete','MessageController@delete')->name('message.delete');
+        Route::post('/message/reply/delete','MessageReplyController@delete')->name('message.deleteReply');
         // 个人留言
         Route::post('/message/person','MessageController@person')->name('message.person');
     });
