@@ -31,8 +31,12 @@ class LinkController extends Controller
     }
 
     // 获取所有链接 分页
-    public function list(){
-        $links = Link::paginate(18);
+    public function list(Request $request){
+        if ($request->all) {
+            $links = Link::get();
+        } else {
+            $links = Link::paginate(15);
+        }
         return $this->success($links);
     }
 
