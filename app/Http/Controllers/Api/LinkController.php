@@ -35,7 +35,7 @@ class LinkController extends Controller
         if ($request->all) {
             $links = Link::get();
         } else {
-            $links = Link::paginate(15);
+            $links = Link::paginate(10);
         }
         return $this->success($links);
     }
