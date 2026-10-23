@@ -1,6 +1,9 @@
 ## v2 版本
 
+mysql >= 5.7
+
 ### 启动项目
+
 ```
 # 复制配置文件，并修改配置文件，修改数据名称和密码，启动redis，配置redis密码（文章点击量使用redis统计）
 cp .env.example .env
@@ -8,7 +11,8 @@ cp .env.example .env
 # 生成key
 php artisan key:generate
 
-# 生成jwt-key
+# 生成jwt-key 版本要用3.3.3，不能用3.4，不然会报错
+# composer require lcobucci/jwt:3.3.3
 php artisan jwt:secret
 
 # 生成数据库表
@@ -36,7 +40,8 @@ http://localhost:8080/api/version
 
 ## 开发使用的插件
 
-### 安装jwt-auth
+### 安装 jwt-auth
+
 ```
 composer require tymon/jwt-auth
 
@@ -53,8 +58,8 @@ php artisan vendor:publish --provider="Tymon\JWTAuth\Providers\LaravelServicePro
 php artisan jwt:secret
 ```
 
-
 ### 安装 telescope
+
 ```
 composer require laravel/telescope
 php artisan telescope:install
@@ -64,7 +69,8 @@ php artisan migrate
 http://localhost:8080/telescope
 ```
 
-### 安装Laravel Horizon
+### 安装 Laravel Horizon
+
 ```
 composer require laravel/horizon
 
@@ -78,6 +84,7 @@ http://localhost:8080/horizon/dashboard
 ```
 
 ### 安装邮件模版
+
 ```
 composer require qoraiche/laravel-mail-editor
 
@@ -90,7 +97,8 @@ php artisan migrate
 http://localhost:8080/maileclipse
 ```
 
-# 手动生成markdown邮件
+# 手动生成 markdown 邮件
+
 ```
 php artisan make:mail NweUser --markdown=mails.newsuer
 
@@ -98,7 +106,8 @@ php artisan make:mail NweUser --markdown=mails.newsuer
 new App\Mails\NewUser()
 ```
 
-### .env邮件配置
+### .env 邮件配置
+
 ```
 # 163邮件配置
 MAIL_DRIVER=smtp
@@ -121,6 +130,7 @@ MAIL_FROM_NAME=天行九歌
 ```
 
 ### 图片上传又拍云
+
 ```php
 composer require "jellybool/flysystem-upyun"
 
@@ -134,7 +144,7 @@ composer require "jellybool/flysystem-upyun"
 return [
     //...
       'upyun' => [
-            'driver'        => 'upyun', 
+            'driver'        => 'upyun',
             'bucket'        => env('UPYUN_PROJECT_NAME'),   // 服务名字
             'operator'      => env('UPYUN_OPERATOR_NAME'),  // 操作员的名字
             'password'      => env('UPYUN_OPERATOR_PASSWORD'), // 操作员的密码
@@ -145,12 +155,20 @@ return [
 ];
 
 // .env配置文件
+// 账号是配置的子账号，不一定是默认账号 如 admin
 UPYUN_PROJECT_NAME = 又拍云项目名称
 UPYUN_OPERATOR_NAME = 账号
 UPYUN_OPERATOR_PASSWORD = 密码
 UPYUN_CNAME = 项目CNAME XXXXX.b0.aicdn.com
 ```
 
+#### 服务器图片上传报错
+
+```
+Unable to guess the MIME type as no guessers are available (have you enabled the php_fileinfo extens
+
+需要安装 `fileinfo` 插件
+```
 
 ```
 # 添加model
@@ -164,6 +182,7 @@ php artisan make:request ArticleRequest
 ```
 
 ### 安装浏览统计插件
+
 ```
 composer require awssat/laravel-visits
 
@@ -176,7 +195,8 @@ CACHE_DRIVER=file 改成 CACHE_DRIVER=array
 # 在Postman里要设置 headers->User-Agent
 ```
 
-#### 关联模型要写在model里，不能写在controller里
+#### 关联模型要写在 model 里，不能写在 controller 里
+
 ```
 public function user() {
     return $this->belongsTo('App\Models\User');
@@ -184,6 +204,7 @@ public function user() {
 ```
 
 #### 数据填充
+
 ```
 # 生成User模型的工厂
 php artisan make:factory UserFactory --model=Models/User
@@ -208,8 +229,8 @@ namespace App\Models;
 factory(User::class, 20)->create();
 ```
 
+### redis 启动
 
-### redis启动
 ```
 cd /usr/local/etc
 redis-server & ./redis.conf
@@ -221,7 +242,7 @@ redis-cli
 pdf功能
 支付功能
 
-
 ### 生成随机头像
+
 https://avatars.dicebear.com/v2/identicon/:seed.svg
 ![https://avatars.dicebear.com/v2/identicon/:seed.svg](https://avatars.dicebear.com/v2/identicon/1.svg)
